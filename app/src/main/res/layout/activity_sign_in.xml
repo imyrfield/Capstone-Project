@@ -1,0 +1,66 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.ianmyrfield.things.SignIn"
+             android:fitsSystemWindows="true"
+    >
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/app_bar_height"
+        android:keepScreenOn="true"
+        android:text="@string/welcome_back"
+        android:textColor="@android:color/white"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:background="@color/colorPrimary"
+        android:visibility="gone"
+        />
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:id="@+id/button_container"
+            style="?metaButtonBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="vertical"
+            tools:ignore="UselessParent"
+            >
+            <Button
+                android:id="@+id/sign_in"
+                android:text="@string/sign_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:textColor="@android:color/white"
+                style="?borderlessButtonStyle"
+                android:textAllCaps="false"
+                />
+
+            <Button
+                android:id="@+id/skip_button"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="bottom|center_horizontal"
+                style="?borderlessButtonStyle"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="1"
+                android:text="@string/skip_button"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                />
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sort Order -->
+    <ListPreference
+        android:title="@string/pref_sort_title"
+        android:key="@string/pref_sort_key"
+        android:dialogTitle="@string/pref_sort_title"
+        android:entries="@array/pref_sort_entries"
+        android:entryValues="@array/pref_sort_values"
+        android:defaultValue="@string/pref_sort_default"
+        />
+    <SwitchPreference
+        android:title="@string/pref_notification_title"
+        android:key="@string/pref_notification_key"
+        android:disableDependentsState="true"
+        android:switchTextOn="@string/notification_on"
+        android:switchTextOff="@string/notification_off"
+        android:defaultValue="true"
+        />
+    <ListPreference
+        android:title="@string/pref_notification_frequency_title"
+        android:key="@string/pref_notification_frequency_key"
+        android:dialogTitle="@string/pref_notification_frequency_title"
+        android:entries="@array/pref_notification_entries"
+        android:entryValues="@array/pref_notification_values"
+        android:defaultValue="@string/pref_notification_default"
+        android:dependency="pref_notification_key"
+        />
+</PreferenceScreen>

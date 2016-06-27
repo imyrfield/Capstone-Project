@@ -1,4 +1,6 @@
 <resources>
+    <!--Settings Theme-->
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

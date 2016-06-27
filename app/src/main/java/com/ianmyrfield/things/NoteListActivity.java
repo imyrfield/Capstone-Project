@@ -1,24 +1,24 @@
 package com.ianmyrfield.things;
 
-import android.content.Context;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-
-import com.ianmyrfield.things.dummy.DummyContent;
-
-import java.util.List;
+import com.ianmyrfield.things.data.NoteContract;
+import com.ianmyrfield.things.dialogs.AboutDialog;
+import com.ianmyrfield.things.dialogs.AddNoteDialog;
+import com.ianmyrfield.things.dialogs.SettingsDialog;
 
 /**
  * An activity representing a list of Notes. This activity
@@ -29,7 +29,24 @@ import java.util.List;
  * item details side-by-side using two vertical panes.
  */
 public class NoteListActivity
-        extends AppCompatActivity {
+        extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    public static final String  TAG             = NoteListActivity.class.getSimpleName();
+    private static final String DIALOG_ABOUT    = "about";
+    private static final String DIALOG_SETTINGS = "add";
+    private NoteAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+
+    public static final String[] NOTE_COLUMNS = {
+            NoteContract.NoteTitles._ID,
+            NoteContract.NoteTitles.COL_TITLE,
+            NoteContract.NoteTitles.COL_COLOR,
+    };
+
+    static final int COL_ID = 0;
+    static final int COL_TITLE = 1;
+    static final int COL_NOTE_COLOR = 2;
+    public static final int NOTE_LOADER = 0;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -39,111 +56,119 @@ public class NoteListActivity
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
+
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_note_list );
 
         Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );
-        toolbar.setTitle( getTitle() );
+
+        if (toolbar != null) toolbar.setTitle( getTitle() );
 
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
-        fab.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick (View view) {
-                Snackbar.make( view,
-                               "Replace with your own action",
-                               Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
-            }
-        } );
 
-        View recyclerView = findViewById( R.id.note_list );
-        assert recyclerView != null;
-        setupRecyclerView( (RecyclerView) recyclerView );
+        if (fab != null) {
 
-        if (findViewById( R.id.note_detail_container ) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
-    }
-
-    private void setupRecyclerView (@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter( new SimpleItemRecyclerViewAdapter( DummyContent.ITEMS ) );
-    }
-
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter (List<DummyContent.DummyItem> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from( parent.getContext() )
-                                      .inflate( R.layout.note_list_content,
-                                                parent,
-                                                false );
-            return new ViewHolder( view );
-        }
-
-        @Override
-        public void onBindViewHolder (final ViewHolder holder, int position) {
-            holder.mItem = mValues.get( position );
-            holder.mIdView.setText( mValues.get( position ).id );
-            holder.mContentView.setText( mValues.get( position ).content );
-
-            holder.mView.setOnClickListener( new View.OnClickListener() {
+            fab.setOnClickListener( new View.OnClickListener() {
                 @Override
-                public void onClick (View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString( NoteDetailFragment.ARG_ITEM_ID,
-                                             holder.mItem.id );
-                        NoteDetailFragment fragment = new NoteDetailFragment();
-                        fragment.setArguments( arguments );
-                        getSupportFragmentManager().beginTransaction()
-                                                   .replace( R.id.note_detail_container,
-                                                             fragment )
-                                                   .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent  intent  = new Intent( context, NoteDetailActivity.class );
-                        intent.putExtra( NoteDetailFragment.ARG_ITEM_ID, holder.mItem.id );
-
-                        context.startActivity( intent );
-                    }
+                public void onClick (View view) {
+                    // For testing Firebase Crash reporting
+                    // throw new RuntimeException( "Boom" );
+                    AddNoteDialog dialog = new AddNoteDialog();
+                    dialog.show( getSupportFragmentManager(), "dialog" );
                 }
             } );
         }
 
-        @Override
-        public int getItemCount () {
-            return mValues.size();
+        mRecyclerView = (RecyclerView) findViewById( R.id.note_list );
+        assert mRecyclerView != null;
+        setupRecyclerView( mRecyclerView );
+
+        mTwoPane = getResources().getBoolean( R.bool.use_detail_activity );
+
+        getLoaderManager().initLoader( NOTE_LOADER, null, this );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate( R.menu.menu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+
+        String dialog;
+        switch (item.getItemId()){
+
+            case R.id.about:
+                dialog = DIALOG_ABOUT;
+                createDialog( dialog, null );
+                return true;
+
+            case R.id.settings:
+                Intent intent = new Intent( this, SettingsDialog.class );
+                startActivity( intent );
+//                dialog = DIALOG_SETTINGS;
+//                createDialog( dialog, null );
+                return true;
+
+            default:
+                return super.onOptionsItemSelected( item );
         }
+    }
 
-        public class ViewHolder
-                extends RecyclerView.ViewHolder {
-            public final View                   mView;
-            public final TextView               mIdView;
-            public final TextView               mContentView;
-            public       DummyContent.DummyItem mItem;
+    @Override
+    public void onBackPressed () {
+        moveTaskToBack( true );
+    }
 
-            public ViewHolder (View view) {
-                super( view );
-                mView = view;
-                mIdView = (TextView) view.findViewById( R.id.id );
-                mContentView = (TextView) view.findViewById( R.id.content );
-            }
+    private void setupRecyclerView (@NonNull RecyclerView recyclerView) {
 
+        mAdapter = new NoteAdapter( this, new NoteAdapter.NoteAdapterOnClickHandler() {
             @Override
-            public String toString () {
-                return super.toString() + " '" + mContentView.getText() + "'";
+            public void onClick (NoteAdapter.NoteAdapterViewHolder vh) {
             }
+        } );
+
+        recyclerView.setAdapter( mAdapter );
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader (int id, Bundle args) {
+
+        if (id == 0) {
+            return new CursorLoader( this,
+                                     NoteContract.NoteTitles.CONTENT_URI,
+                                     NOTE_COLUMNS,
+                                     null,
+                                     null,
+                                     null );
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void onLoaderReset (Loader<Cursor> loader) {
+        mAdapter.swapCursor( null );
+    }
+
+    @Override
+    public void onLoadFinished (Loader<Cursor> loader, final Cursor data) {
+
+        mAdapter.swapCursor( data );
+    }
+
+    public void createDialog (String dialog, Bundle args) {
+
+        switch (dialog) {
+
+            case ( DIALOG_ABOUT ):
+
+                AboutDialog dialog_Fragment = new AboutDialog();
+                dialog_Fragment.show( getFragmentManager(), "dialog" );
+                break;
         }
     }
 }

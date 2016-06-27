@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="black_overlay">#66000000</color>
+
+    <!--Color Chooser -->
+    <color name="red">#EF9A9A</color>
+    <color name="purple">#CE93D8</color>
+    <color name="blue">#9FA8DA</color>
+    <color name="green">#A5D6A7</color>
+    <color name="yellow">#FFE082</color>
 </resources>

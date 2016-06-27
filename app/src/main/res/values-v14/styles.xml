@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Settings Theme-->
+
+    <!-- Settings activity action bar styles -->
+    <style name="ActionBar.V14.Notes.NoTitle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:height">?android:actionBarSize</item>
+    </style>
+</resources>
