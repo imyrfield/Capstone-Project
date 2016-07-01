@@ -36,6 +36,7 @@ public class NoteListActivity
     private static final String DIALOG_SETTINGS = "add";
     private NoteAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private View mEmptyView;
 
     public static final String[] NOTE_COLUMNS = {
             NoteContract.NoteTitles._ID,
@@ -81,8 +82,9 @@ public class NoteListActivity
         }
 
         mRecyclerView = (RecyclerView) findViewById( R.id.note_list );
+        mEmptyView = findViewById( R.id.empty_view );
         assert mRecyclerView != null;
-        setupRecyclerView( mRecyclerView );
+        setupRecyclerView( mRecyclerView, mEmptyView );
 
         mTwoPane = getResources().getBoolean( R.bool.use_detail_activity );
 
@@ -123,13 +125,14 @@ public class NoteListActivity
         moveTaskToBack( true );
     }
 
-    private void setupRecyclerView (@NonNull RecyclerView recyclerView) {
+    private void setupRecyclerView (@NonNull RecyclerView recyclerView, @NonNull View
+            emptyView) {
 
         mAdapter = new NoteAdapter( this, new NoteAdapter.NoteAdapterOnClickHandler() {
             @Override
             public void onClick (NoteAdapter.NoteAdapterViewHolder vh) {
             }
-        } );
+        }, emptyView );
 
         recyclerView.setAdapter( mAdapter );
     }

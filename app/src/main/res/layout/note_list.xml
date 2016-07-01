@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView android:id="@+id/note_list"
-                                        android:name="com.ianmyrfield.things.NoteListFragment"
-                                        xmlns:android="http://schemas.android.com/apk/res/android"
-                                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                                        xmlns:tools="http://schemas.android.com/tools"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:padding="@dimen/text_margin"
-                                        app:layoutManager="LinearLayoutManager"
-                                        tools:context="com.ianmyrfield.things.NoteListActivity"
-                                        tools:listitem="@layout/note_list_content"
-    />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:padding="@dimen/text_margin"
+    >
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/note_list"
+        android:name="com.ianmyrfield.things.NoteListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="com.ianmyrfield.things.NoteListActivity"
+        tools:listitem="@layout/note_list_content"
+        />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?android:actionBarSize"
+        android:gravity="center"
+        android:text="@string/empty_view_text"
+        android:textSize="20sp"
+        />
+</FrameLayout>

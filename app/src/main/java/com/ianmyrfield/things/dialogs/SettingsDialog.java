@@ -18,6 +18,7 @@ import com.ianmyrfield.things.R;
  */
 public class SettingsDialog extends AppCompatActivity {
 
+    public static final String sort = "sort";
     @Override
     protected void onCreate (@Nullable Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );

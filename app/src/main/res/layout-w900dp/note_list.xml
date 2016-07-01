@@ -13,20 +13,35 @@
     >
     <!--
     This layout is a two-pane layout for the Notes
-    master/detail flow.
-    
-    --><android.support.v7.widget.RecyclerView android:id="@+id/note_list"
-                                               android:name="com.ianmyrfield.things.NoteListFragment"
-                                               xmlns:android="http://schemas.android.com/apk/res/android"
-                                               xmlns:tools="http://schemas.android.com/tools"
-                                               android:layout_width="@dimen/item_width"
-                                               android:layout_height="match_parent"
-                                               android:layout_marginLeft="16dp"
-                                               android:layout_marginRight="16dp"
-                                               app:layoutManager="LinearLayoutManager"
-                                               tools:context="com.ianmyrfield.things.NoteListActivity"
-                                               tools:listitem="@layout/note_list_content"
-    />
+    master/detail flow.-->
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="match_parent"
+        android:layout_marginRight="16dp"
+        >
+
+        <android.support.v7.widget.RecyclerView
+                                            android:id="@+id/note_list"
+                                            android:name="com.ianmyrfield.things.NoteListFragment"
+                                            xmlns:android="http://schemas.android.com/apk/res/android"
+                                            xmlns:tools="http://schemas.android.com/tools"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            app:layoutManager="LinearLayoutManager"
+                                            tools:context="com.ianmyrfield.things.NoteListActivity"
+                                            tools:listitem="@layout/note_list_content"
+                                            />
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/empty_view_text"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:layout_marginBottom="?android:actionBarSize"
+            />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/note_detail_container"

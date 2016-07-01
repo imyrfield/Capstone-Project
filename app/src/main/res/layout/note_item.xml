@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/note_item_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="@color/green"
+    android:divider="@android:drawable/divider_horizontal_dark"
+    android:orientation="horizontal"
+    android:showDividers="middle"
+    tools:context=".NoteDetailActivity"
+    >
+
+    <TextView
+        android:paddingStart="4dp"
+        android:id="@+id/list_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        tools:text="Example Item"
+        />
+
+    <ImageButton
+        android:id="@+id/alarm_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@color/green"
+        android:src="@android:drawable/ic_popup_reminder"
+        />
+</RelativeLayout>

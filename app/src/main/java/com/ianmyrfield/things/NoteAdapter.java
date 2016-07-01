@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -31,14 +32,16 @@ public class NoteAdapter
     private       boolean                   mTwoPane;
     private       boolean                   displayOptions;
     private       View                      rootView;
+    private View mEmptyView;
 
     public interface NoteAdapterOnClickHandler {
         void onClick (NoteAdapterViewHolder vh);
     }
 
-    public NoteAdapter (Context context, NoteAdapterOnClickHandler clickHandler) {
+    public NoteAdapter (Context context, NoteAdapterOnClickHandler clickHandler, View emptyView) {
         mContext = context;
         mClickHandler = clickHandler;
+        mEmptyView = emptyView;
     }
 
     @Override
@@ -47,6 +50,7 @@ public class NoteAdapter
         mTwoPane = mContext.getResources().getBoolean( R.bool.use_detail_activity );
         displayOptions = false;
         rootView = parent;
+
         if (parent instanceof RecyclerView) {
 
             View view = LayoutInflater.from( parent.getContext() )
@@ -58,7 +62,7 @@ public class NoteAdapter
             return new NoteAdapterViewHolder( view );
 
         } else {
-            throw new RuntimeException( "Not bound to Recycler View" );
+            throw new RuntimeException( "Main Activity: Not bound to Recycler View" );
         }
     }
 
@@ -88,20 +92,20 @@ public class NoteAdapter
 
     @Override
     public int getItemCount () {
-        return mCursor != null ? mCursor.getCount() : 0;
+            return mCursor != null ? mCursor.getCount() : 0;
     }
 
     public void swapCursor (Cursor newCursor) {
         mCursor = newCursor;
         notifyDataSetChanged();
+        mEmptyView.setVisibility( getItemCount() == 0 ? View.VISIBLE : View.INVISIBLE );
     }
 
     public Cursor getCursor () {
         return mCursor;
     }
 
-    public class NoteAdapterViewHolder
-            extends RecyclerView.ViewHolder
+    public class NoteAdapterViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
         public final TextView       mTextView;
@@ -174,8 +178,14 @@ public class NoteAdapter
                                     .setAction( "Action", null )
                                     .show();
                         } else {
+
+                            Bundle bundle = new Bundle( );
+                            bundle.putInt( NoteDetailFragment.ARG_ITEM_ID, mCursor.getInt( NoteListActivity.COL_ID ));
+                            bundle.putString( NoteDetailFragment.ARG_TITLE, mCursor.getString( NoteListActivity.COL_TITLE ) );
+                            bundle.putInt( NoteDetailFragment.ARG_COLOR , mCursor.getInt( NoteListActivity.COL_NOTE_COLOR ) );
+
                             Intent intent = new Intent( mContext, NoteDetailActivity.class);
-                            intent.putExtra( NoteDetailFragment.ARG_ITEM_ID, mCursor.getPosition());
+                            intent.putExtras( bundle );
                             mContext.startActivity( intent );
                         }
                     }
@@ -199,6 +209,7 @@ public class NoteAdapter
             }
         }
     }
+
     private void deleteNote(){
         if (mCursor == null) return;
         String id = mCursor.getString( NoteListActivity.COL_ID );

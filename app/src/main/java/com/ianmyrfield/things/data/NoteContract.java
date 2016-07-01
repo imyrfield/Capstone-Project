@@ -88,7 +88,7 @@ public class NoteContract {
         }
 
         public static String getColNoteTitle(Uri uri) {
-            return uri.getPathSegments().get( 2 );
+            return uri.getPathSegments().get( 1 );
         }
 
         public static String getColReminder(Uri uri){
