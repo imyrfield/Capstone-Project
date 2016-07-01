@@ -50,6 +50,7 @@ public class NoteDetailFragment
     private String mTitle;
     private String newTitle;
     private int    mColor;
+    private int newColor;
 
     private RecyclerView    mRecyclerView;
     private NoteItemAdapter mAdapter;
@@ -83,7 +84,7 @@ public class NoteDetailFragment
     }
 
     @Override
-    public void onCreate (Bundle savedInstanceState) {
+    public void onCreate ( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         mContext = getContext();
@@ -96,19 +97,23 @@ public class NoteDetailFragment
     }
 
     @Override
-    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu ( Menu menu, MenuInflater inflater ) {
         getActivity().getMenuInflater().inflate( R.menu.detail, menu );
         super.onCreateOptionsMenu( menu, inflater );
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected ( MenuItem item ) {
 
-        switch (item.getItemId()) {
+        switch ( item.getItemId() ) {
             case R.id.edit_title:
                 editTitle();
                 return true;
             case R.id.change_color:
+
+                // resets color
+                newColor = 0;
+
                 new SpectrumDialog.Builder( getContext() ).setColors( getResources().getIntArray(
                         R.array.colors ) )
                                                           .setDismissOnColorSelected( true )
@@ -116,10 +121,10 @@ public class NoteDetailFragment
                                                           .setOnColorSelectedListener( new SpectrumDialog.OnColorSelectedListener() {
                                                               @Override
                                                               public void onColorSelected (
-                                                                      boolean positiveResult,
-                                                                      @ColorInt int color) {
-                                                                  if (positiveResult) {
-                                                                      mColor = color;
+                                                                                                  boolean positiveResult,
+                                                                                                  @ColorInt int color ) {
+                                                                  if ( positiveResult ) {
+                                                                      newColor = color;
                                                                       saveChanges();
                                                                   }
                                                               }
@@ -134,18 +139,18 @@ public class NoteDetailFragment
     }
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView ( LayoutInflater inflater, ViewGroup container,
+                               Bundle savedInstanceState ) {
 
-        View root = inflater.inflate( R.layout.note_detail, container, false );
+        View root = inflater.inflate( R.layout.note_detail, null, false );
 
         // Setup FAB
         FloatingActionButton fab = (FloatingActionButton) root.findViewById( R.id.fab );
-        if (fab != null) {
+        if ( fab != null ) {
 
             fab.setOnClickListener( new View.OnClickListener() {
                 @Override
-                public void onClick (View view) {
+                public void onClick ( View view ) {
 
                     Snackbar.make( view,
                                    "Replace with your own detail action",
@@ -157,26 +162,20 @@ public class NoteDetailFragment
         }
 
         mRecyclerView = (RecyclerView) root.findViewById( R.id.note_detail );
-        if (mRecyclerView != null) { setupRecyclerView( mRecyclerView ); }
+        if ( mRecyclerView != null ) { setupRecyclerView( mRecyclerView ); }
 
         mToolbar = (Toolbar) getActivity().findViewById( R.id.detail_toolbar );
         mEditText = (EditText) getActivity().findViewById( R.id.edit_title );
         setupToolBar();
-        //TODO: Edit Title - figure out focus changes
-        // Or use checkmark and x buttons?
+
         mEditText.setOnFocusChangeListener( new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange (View v, boolean hasFocus) {
-                switch (v.getId()) {
-                    case R.id.edit_title:
-                        if (!hasFocus) {
-                            String s = mEditText.getText().toString();
-                            Log.d( TAG, "onFocusChange: " + s );
-                            editTitle();
-                        }
-                        break;
-                    default:
-                        break;
+            public void onFocusChange ( View v, boolean hasFocus ) {
+
+                if ( !hasFocus ) {
+                    newTitle = mEditText.getText().toString();
+                    Log.d( TAG, "onFocusChange: " + newTitle );
+                    saveChanges();
                 }
             }
         } );
@@ -184,42 +183,43 @@ public class NoteDetailFragment
         return root;
     }
 
-    private void setupRecyclerView (RecyclerView recyclerView) {
+    private void setupRecyclerView ( RecyclerView recyclerView ) {
         mAdapter = new NoteItemAdapter( mContext );
         mRecyclerView.setAdapter( mAdapter );
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader (int id, Bundle args) {
-        if (id == 1) {
+    public Loader<Cursor> onCreateLoader ( int id, Bundle args ) {
+        if ( id == 1 ) {
 
             String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " DESC";
             Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
             // TODO: Check if that's the right setup for returning list items
             return new CursorLoader( mContext, uri, NOTE_COLUMNS, null, null, sortOrder );
-        } else {
+        }
+        else {
             return null;
         }
     }
 
     @Override
-    public void onLoadFinished (Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished ( Loader<Cursor> loader, Cursor data ) {
         mAdapter.swapCursor( data );
     }
 
     @Override
-    public void onLoaderReset (Loader<Cursor> loader) {
+    public void onLoaderReset ( Loader<Cursor> loader ) {
         mAdapter.swapCursor( null );
     }
 
     @Override
-    public void onSharedPreferenceChanged (SharedPreferences sharedPreferences,
-                                           String key) {
+    public void onSharedPreferenceChanged ( SharedPreferences sharedPreferences,
+                                            String key ) {
         // TODO: onSharedPreferenceChanged
         // move key vaues to Settings Activity as public static final Strings?
         // will that work for preferences.xml
 
-        switch (key) {
+        switch ( key ) {
             case SettingsDialog.sort:
                 break;
             default:
@@ -229,26 +229,21 @@ public class NoteDetailFragment
 
     private void setupToolBar () {
 
-        if (mToolbar != null) {
+        if ( mToolbar != null ) {
 
             mToolbar.setTitle( mTitle );
             mToolbar.setBackgroundColor( mColor );
-            Log.d("NoteDetailFragment", "setupToolBar (line 242): color: " + mColor);
-
-            if (mEditText != null) {
-                mEditText.setText( mTitle );
-            }
-        } else {
-            Log.d( "NoteDetailFragment", "setupToolBar (line 248):  mToolbar is null" );
         }
     }
 
     private void editTitle () {
 
-        if (mEditText.getVisibility() == View.GONE) {
+        if ( mEditText.getVisibility() == View.GONE ) {
+            mEditText.setText( mTitle );
             mEditText.setVisibility( View.VISIBLE );
             mToolbar.setTitle( "" );
-        } else {
+        }
+        else {
             mEditText.setVisibility( View.GONE );
             mToolbar.setTitle( mTitle );
         }
@@ -256,7 +251,16 @@ public class NoteDetailFragment
 
     private void saveChanges () {
 
+        // Protects against NPE
+        if (newTitle == null) {newTitle = mTitle;}
+
+        // No change, therefore no need to save.
+        if (newTitle.equals( mTitle ) && newColor == mColor) {return;}
+
         ContentValues cv = new ContentValues();
+
+        mTitle = newTitle;
+        if (newColor != 0) { mColor = newColor; }
 
         cv.put( NoteContract.NoteTitles.COL_TITLE, mTitle );
         cv.put( NoteContract.NoteTitles.COL_COLOR, mColor );
@@ -265,10 +269,7 @@ public class NoteDetailFragment
                                    .update( NoteContract.NoteTitles.CONTENT_URI,
                                             cv,
                                             NoteContract.NoteTitles._ID + " = ?",
-                                            new String[]{ ID } );
-
-        // mTitle = newTitle;
-
+                                            new String[] { ID } );
         setupToolBar();
     }
 }
