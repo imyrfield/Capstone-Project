@@ -26,7 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/dialog_input_hint"
-            android:inputType="textAutoCorrect"
+            android:inputType="textAutoCorrect|textCapSentences"
+            android:imeActionLabel="@string/action_add"
+            android:imeOptions="actionDone"
             android:nextFocusLeft="@id/edit_text"
             android:nextFocusUp="@id/edit_text"
             />

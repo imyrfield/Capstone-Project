@@ -55,7 +55,6 @@ public class AddNoteDialog
                                            cv.put( NoteContract.NoteTitles.COL_TITLE,
                                                    title );
 
-                                           // TODO: Remove once delete function works
                                            if (mColor == -1) {
                                                mColor = getResources().getColor( R.color.yellow );
                                            }
@@ -69,7 +68,7 @@ public class AddNoteDialog
                                            } catch (SQLException e) {
                                                e.printStackTrace();
                                                Log.d( "AddNoteDialog", "onClick (line " +
-                                                       "77): " + e );
+                                                       "77): " + e.getMessage() );
                                            }
 
 

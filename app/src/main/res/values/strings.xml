@@ -64,6 +64,8 @@
     <string name="empty_view_text">No items added yet</string>
     <string name="action_change_color">Change Color</string>
     <string name="action_change_title">Change Title</string>
+    <string name="action_add">Add</string>
+    <string name="action_cancel_title_edit">Cancel</string>
     <string-array name="pref_notification_entries">
         <item>5 minutes</item>
         <item>15 minutes</item>

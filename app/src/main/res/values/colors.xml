@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="black_overlay">#66000000</color>
-    <color name="grey">#66696666</color>
+    <color name="grey">#616161</color>
+    <color name="light_grey">#bdbdbd</color>
 
     <!--Color Chooser -->
     <color name="red">#EF9A9A</color>

@@ -39,17 +39,16 @@ public class NoteProvider
 
     // note_titles.title = ?
 
-    private static final String sNoteTitleSelection = NoteContract.NoteTitles.TABLE_NAME +
-            "." + NoteContract.NoteTitles.COL_TITLE + " = " + "? ";
+    private static final String sNoteTitleSelection = NoteContract.NoteItems.TABLE_NAME +
+            "." + NoteContract.NoteItems.COL_TITLE_KEY + " = " + "? ";
 
-    private Cursor getItemsForTitle (Uri uri, String sortOrder) {
+    private Cursor getItemsForTitle (Uri uri, String[] projection, String sortOrder) {
         String title = NoteContract.NoteItems.getColNoteTitle( uri );
 
         String   selection     = sNoteTitleSelection;
         String[] selectionArgs = new String[]{ title };
-
         return sNotesWithTitleQueryBuilder.query( mDbHelper.getReadableDatabase(),
-                                                  null,
+                                                  projection,
                                                   selection,
                                                   selectionArgs,
                                                   null,
@@ -110,7 +109,7 @@ public class NoteProvider
             }
             // "items/*"
             case NOTES_WITH_TITLE:{
-                retCursor = getItemsForTitle( uri, sortOrder );
+                retCursor = getItemsForTitle( uri, projection, sortOrder );
                 break;
             }
             default:

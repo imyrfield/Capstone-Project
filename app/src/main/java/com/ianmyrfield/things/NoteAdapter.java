@@ -76,13 +76,7 @@ public class NoteAdapter
         String title = mCursor.getString( NoteListActivity.COL_TITLE );
         holder.mTextView.setText( title );
 
-        // Set color of note, and check for null value in db.
-        int color = -1;
-        if (mCursor.isNull( NoteListActivity.COL_NOTE_COLOR )){
-            color = mContext.getResources().getColor( R.color.yellow );
-        } else {
-            color = mCursor.getInt( NoteListActivity.COL_NOTE_COLOR );
-        }
+        int color = mCursor.getInt( NoteListActivity.COL_NOTE_COLOR );
         holder.mCardView.setBackgroundColor( color );
         holder.deleteButton.setBackgroundResource( 0 );
         holder.exitButton.setBackgroundResource( 0 );

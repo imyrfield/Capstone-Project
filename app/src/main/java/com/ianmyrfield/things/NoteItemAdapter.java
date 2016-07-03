@@ -7,14 +7,15 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 /**
  * Created by Ian on 6/28/2016.
  */
 public class NoteItemAdapter extends RecyclerView.Adapter<NoteItemAdapter.NoteItemAdapterViewHolder> {
 
+    private static final String TAG = "NoteItemAdapter";
     private Cursor mCursor;
     private Context mContext;
 
@@ -69,13 +70,13 @@ public class NoteItemAdapter extends RecyclerView.Adapter<NoteItemAdapter.NoteIt
     public class NoteItemAdapterViewHolder extends RecyclerView.ViewHolder implements
                                                                            View.OnDragListener {
 
-        public final TextView mTextView;
+        public final EditText    mTextView;
         public final ImageButton mImageButton;
 
         public NoteItemAdapterViewHolder (View view) {
             super( view );
 
-            mTextView = (TextView) view.findViewById( R.id.list_item );
+            mTextView = (EditText) view.findViewById( R.id.list_item );
             mImageButton = (ImageButton) view.findViewById( R.id.alarm_icon );
         }
 

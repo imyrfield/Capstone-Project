@@ -1,6 +1,10 @@
 package com.ianmyrfield.things;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 /**
  * Created by Ian on 6/9/2016.
@@ -24,4 +28,13 @@ public class Utility {
         }
     }
 
+    /**
+     * Hides Keyboard
+     * @param context
+     * @param view
+     */
+    public static void hideKeyboardFrom ( Context context, View view ) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService( Activity.INPUT_METHOD_SERVICE );
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 }
