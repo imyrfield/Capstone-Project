@@ -23,7 +23,6 @@ public class NoteProvider
     static final int NOTE_TITLE       = 100;
     static final int NOTE_ITEM        = 101;
     static final int NOTES_WITH_TITLE = 102;
-    // TODO: Any other URIs to match?
 
     private static final SQLiteQueryBuilder sNotesWithTitleQueryBuilder;
 

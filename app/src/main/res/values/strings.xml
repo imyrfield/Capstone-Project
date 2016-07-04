@@ -45,8 +45,8 @@
         <item>Oldest First</item>
     </string-array>
     <string-array name="pref_sort_values">
-        <item>desc</item>
-        <item>asc</item>
+        <item>DESC</item>
+        <item>ASC</item>
     </string-array>
 
     <!--Notifications-->
@@ -66,6 +66,7 @@
     <string name="action_change_title">Change Title</string>
     <string name="action_add">Add</string>
     <string name="action_cancel_title_edit">Cancel</string>
+    <string name="edit_text_hint_add_item">Add another item to your list...</string>
     <string-array name="pref_notification_entries">
         <item>5 minutes</item>
         <item>15 minutes</item>

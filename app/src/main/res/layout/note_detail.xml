@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     >
 
     <android.support.design.widget.TextInputLayout
@@ -25,7 +27,7 @@
             android:gravity="center_vertical"
             android:layout_height="wrap_content"
             android:background="@color/light_grey"
-            android:hint="Add another item to your list..."
+            android:hint="@string/edit_text_hint_add_item"
             android:inputType="textAutoCorrect|textCapSentences"
             android:imeActionLabel="@string/action_add"
             android:imeOptions="actionDone"
@@ -42,5 +44,15 @@
         app:layoutManager="LinearLayoutManager"
         tools:context="com.ianmyrfield.things.NoteDetailFragment"
         tools:listitem="@layout/note_item"
+        />
+
+    <TextView
+        android:id="@+id/empty_detail_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?android:actionBarSize"
+        android:gravity="center"
+        android:text="@string/empty_view_text"
+        android:textSize="20sp"
         />
 </LinearLayout>

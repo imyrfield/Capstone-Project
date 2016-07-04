@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,8 +43,9 @@ public class SignIn
         if (!isFirstLoad) {
             // User already auth'd - Show welcome message
             if (auth.getCurrentUser() != null) {
-                //TODO: setup transition
+                //TODO: setup transition, not being displayed since activity starts right away
                 welcome.setVisibility( View.VISIBLE );
+                Log.d( "SignIn", "onCreate (line 47): " );
             }
             // User has not signed in, but has already seen sign in screen
             startMainActivity();
@@ -108,6 +110,7 @@ public class SignIn
                        startMainActivity();
                    }
                } );
+        builder.show();
     }
 
     private void hideSignIn () {

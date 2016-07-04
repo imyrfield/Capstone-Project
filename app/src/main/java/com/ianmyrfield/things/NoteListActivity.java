@@ -18,7 +18,7 @@ import android.view.View;
 import com.ianmyrfield.things.data.NoteContract;
 import com.ianmyrfield.things.dialogs.AboutDialog;
 import com.ianmyrfield.things.dialogs.AddNoteDialog;
-import com.ianmyrfield.things.dialogs.SettingsDialog;
+import com.ianmyrfield.things.dialogs.SettingsActivity;
 
 /**
  * An activity representing a list of Notes. This activity
@@ -68,6 +68,8 @@ public class NoteListActivity
 
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
 
+        // TODO: 7/3/2016 if (mTwoPane) { // Add + icon to toolbar for NoteList. } else { // Use FAB in NoteList }
+
         if (fab != null) {
 
             fab.setOnClickListener( new View.OnClickListener() {
@@ -109,7 +111,7 @@ public class NoteListActivity
                 return true;
 
             case R.id.settings:
-                Intent intent = new Intent( this, SettingsDialog.class );
+                Intent intent = new Intent( this, SettingsActivity.class );
                 startActivity( intent );
 //                dialog = DIALOG_SETTINGS;
 //                createDialog( dialog, null );

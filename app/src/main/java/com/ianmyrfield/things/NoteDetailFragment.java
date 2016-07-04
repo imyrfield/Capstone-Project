@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,7 +30,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ianmyrfield.things.data.NoteContract;
-import com.ianmyrfield.things.dialogs.SettingsDialog;
+import com.ianmyrfield.things.dialogs.SettingsActivity;
 import com.thebluealliance.spectrum.SpectrumDialog;
 
 /**
@@ -45,17 +46,18 @@ public class NoteDetailFragment
     
     private static final String TAG = "NoteDetailFragment";
     
+    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_TITLE   = "title";
+    public static final String ARG_COLOR   = "color";
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
-    public static final String ARG_TITLE   = "title";
-    public static final String ARG_COLOR   = "color";
     private String mTitle;
     private String newTitle;
     private int    mColor;
     private int    newColor;
+    private String mSortPref;
     
     private RecyclerView         mRecyclerView;
     private NoteItemAdapter      mAdapter;
@@ -64,7 +66,7 @@ public class NoteDetailFragment
     private Toolbar              mToolbar;
     private TextInputLayout      itemInputLayout;
     private FloatingActionButton mFab;
-    
+    private View mEmptyView;
     Context mContext;
     
     public static final String[] NOTE_COLUMNS = { NoteContract.NoteTitles.TABLE_NAME + "." + NoteContract.NoteTitles._ID,
@@ -83,6 +85,7 @@ public class NoteDetailFragment
     
     public static final int NOTE_ITEM_LOADER = 1;
     private String ID;
+    private SharedPreferences mSharedPreferences;
     
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -94,13 +97,16 @@ public class NoteDetailFragment
     @Override
     public void onCreate ( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        
+
         mContext = getContext();
         setHasOptionsMenu( true );
         ID = String.valueOf( getArguments().getInt( ARG_ITEM_ID ) );
         mTitle = getArguments().getString( ARG_TITLE );
         mColor = getArguments().getInt( ARG_COLOR );
-        
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences( mContext );
+        mSharedPreferences.registerOnSharedPreferenceChangeListener( this );
+        mSortPref = mSharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
+
         getLoaderManager().initLoader( NOTE_ITEM_LOADER, null, this );
     }
     
@@ -171,7 +177,7 @@ public class NoteDetailFragment
                 }
             } );
         }
-
+        mEmptyView = root.findViewById( R.id.empty_detail_view );
         mRecyclerView = (RecyclerView) root.findViewById( R.id.note_detail );
         if ( mRecyclerView != null ) { setupRecyclerView( mRecyclerView ); }
         
@@ -218,11 +224,12 @@ public class NoteDetailFragment
                 return handled;
             }
         } );
-        return root;
+
+            return root;
     }
     
     private void setupRecyclerView ( RecyclerView recyclerView ) {
-        mAdapter = new NoteItemAdapter( mContext );
+        mAdapter = new NoteItemAdapter( mContext, mEmptyView );
         mRecyclerView.setAdapter( mAdapter );
     }
     
@@ -230,10 +237,9 @@ public class NoteDetailFragment
     public Loader<Cursor> onCreateLoader ( int id, Bundle args ) {
 
         if ( id == 1 ) {
-            String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " DESC";
+            String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " " + mSortPref;
             Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
             Log.d("NoteDetailFragment", "onCreateLoader (line 232): " + uri.toString());
-            // TODO: Check if that's the right setup for returning list items
             return new CursorLoader( mContext, uri, NOTE_COLUMNS, null, null, sortOrder );
         }
         else {
@@ -255,15 +261,10 @@ public class NoteDetailFragment
     @Override
     public void onSharedPreferenceChanged ( SharedPreferences sharedPreferences,
                                             String key ) {
-        // TODO: onSharedPreferenceChanged
-        // move key vaues to Settings Activity as public static final Strings?
-        // will that work for preferences.xml
-        
-        switch ( key ) {
-            case SettingsDialog.sort:
-                break;
-            default:
-                break;
+
+        if (key.equals( SettingsActivity.PREF_SORT_KEY )){
+            mSortPref = sharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
+            getLoaderManager().restartLoader( NOTE_ITEM_LOADER, null, this );
         }
     }
     
@@ -355,5 +356,11 @@ public class NoteDetailFragment
         }
 
         showNewItemPrompt();
+    }
+
+    @Override public void onDetach () {
+        super.onDetach();
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener( this );
+
     }
 }

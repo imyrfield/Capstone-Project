@@ -2,47 +2,57 @@ package com.ianmyrfield.things;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.daimajia.swipe.SwipeLayout;
+import com.ianmyrfield.things.data.NoteContract;
 
 /**
  * Created by Ian on 6/28/2016.
  */
-public class NoteItemAdapter extends RecyclerView.Adapter<NoteItemAdapter.NoteItemAdapterViewHolder> {
+public class NoteItemAdapter
+        extends RecyclerView.Adapter<NoteItemAdapter.NoteItemAdapterViewHolder> {
 
     private static final String TAG = "NoteItemAdapter";
-    private Cursor mCursor;
+    private Cursor  mCursor;
     private Context mContext;
+    private View    mEmptyView;
+    private View rootView;
 
-    public NoteItemAdapter (Context context) {
+    public NoteItemAdapter ( Context context, View emptyView ) {
         mContext = context;
+        mEmptyView = emptyView;
     }
 
     @Override
-    public NoteItemAdapterViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
+    public NoteItemAdapterViewHolder onCreateViewHolder ( ViewGroup parent,
+                                                          int viewType ) {
 
-        if (parent instanceof RecyclerView) {
+        if ( parent instanceof RecyclerView ) {
 
+            rootView = parent;
             View view = LayoutInflater.from( parent.getContext() )
-                 .inflate( R.layout.note_item, parent, false );
+                                      .inflate( R.layout.note_item, parent, false );
             view.setFocusable( true );
 
-            return new NoteItemAdapterViewHolder( view ) ;
+            return new NoteItemAdapterViewHolder( view );
 
-        } else {
+        }
+        else {
             throw new RuntimeException( "Detail Fragment: Not bound to Recycler View" );
         }
     }
 
     @Override
-    public void onBindViewHolder (NoteItemAdapterViewHolder holder, int position) {
+    public void onBindViewHolder ( NoteItemAdapterViewHolder holder, int position ) {
 
-        if (mCursor == null) return;
+        if ( mCursor == null ) return;
 
         mCursor.moveToPosition( position );
 
@@ -50,7 +60,38 @@ public class NoteItemAdapter extends RecyclerView.Adapter<NoteItemAdapter.NoteIt
         holder.mTextView.setText( itemContent );
 
         String reminder = mCursor.getString( NoteDetailFragment.COL_REMINDER );
-        holder.mImageButton.setVisibility( reminder != null ? View.VISIBLE : View.INVISIBLE );
+        holder.mImageButton.setVisibility( reminder != null
+                                           ? View.VISIBLE
+                                           : View.INVISIBLE );
+
+        holder.mSwipeLayout.setShowMode( SwipeLayout.ShowMode.LayDown );
+        holder.mSwipeLayout.addSwipeListener( new SwipeLayout.SwipeListener() {
+            @Override public void onStartOpen ( SwipeLayout layout ) {
+
+            }
+
+            @Override public void onOpen ( SwipeLayout layout ) {
+
+            }
+
+            @Override public void onStartClose ( SwipeLayout layout ) {
+
+            }
+
+            @Override public void onClose ( SwipeLayout layout ) {
+
+            }
+
+            @Override
+            public void onUpdate ( SwipeLayout layout, int leftOffset, int topOffset ) {
+
+            }
+
+            @Override
+            public void onHandRelease ( SwipeLayout layout, float xvel, float yvel ) {
+
+            }
+        } );
     }
 
     @Override
@@ -58,53 +99,64 @@ public class NoteItemAdapter extends RecyclerView.Adapter<NoteItemAdapter.NoteIt
         return mCursor != null ? mCursor.getCount() : 0;
     }
 
-    public void swapCursor(Cursor newCursor) {
+    public void swapCursor ( Cursor newCursor ) {
         mCursor = newCursor;
         notifyDataSetChanged();
+        mEmptyView.setVisibility( getItemCount() == 0 ? View.VISIBLE : View.INVISIBLE );
     }
 
-    public Cursor getCursor(){
+    public Cursor getCursor () {
         return mCursor;
     }
 
-    public class NoteItemAdapterViewHolder extends RecyclerView.ViewHolder implements
-                                                                           View.OnDragListener {
+    public class NoteItemAdapterViewHolder
+            extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final EditText    mTextView;
+        public final TextView    mTextView;
         public final ImageButton mImageButton;
+        private      SwipeLayout mSwipeLayout;
+        private      ImageButton mDelete;
 
-        public NoteItemAdapterViewHolder (View view) {
+        public NoteItemAdapterViewHolder ( View view ) {
             super( view );
 
-            mTextView = (EditText) view.findViewById( R.id.list_item );
+            mSwipeLayout = (SwipeLayout) view.findViewById( R.id.swipe );
+            mTextView = (TextView) view.findViewById( R.id.list_item );
             mImageButton = (ImageButton) view.findViewById( R.id.alarm_icon );
+            mDelete = (ImageButton) view.findViewById( R.id.delete );
+            mDelete.setOnClickListener( this );
         }
 
-        @Override
-        public boolean onDrag (View v, DragEvent event) {
-
-            // TODO: Swipe to delete
-            // after swipe, replace view with Undo View for 5 seconds?
-            switch (event.getAction()){
-                case DragEvent.ACTION_DRAG_STARTED:
-                    break;
-                case DragEvent.ACTION_DRAG_LOCATION:
-                    break;
-                default:
-                    break;
-
-            }
-            return false;
+        @Override public void onClick ( View v ) {
+            int pos = getAdapterPosition();
+            mCursor.moveToPosition( pos );
+            deleteItem();
         }
     }
 
-    private void deleteItem(){
+    private void deleteItem () {
+        if ( mCursor == null ) return;
 
+        String id = mCursor.getString( NoteDetailFragment.COL_ITEM_ID);
+        int deleted = mContext.getContentResolver().delete( NoteContract.NoteItems.CONTENT_URI,
+                                                            NoteContract.NoteItems._ID + "" + " = ?",
+                                                            new String[] { id } );
+        String message;
+        if ( deleted > 0 ) {
+            message = mCursor.getString( NoteDetailFragment.COL_ITEM_CONTENT ) + " Deleted!";
+        }
+        else {
+            message = "Failed to delete item";
+        }
+        Snackbar.make( rootView, message,
+                       Snackbar.LENGTH_LONG )
+                .setAction( "Action", null )
+                .show();
     }
 
     @Override
-    public void onDetachedFromRecyclerView (RecyclerView recyclerView) {
-        if (mCursor != null) {
+    public void onDetachedFromRecyclerView ( RecyclerView recyclerView ) {
+        if ( mCursor != null ) {
             mCursor.close();
         }
 

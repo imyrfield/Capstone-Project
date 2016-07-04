@@ -36,17 +36,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ianmyrfield.things.NoteListActivity" />
         </activity>
-        <activity
-            android:name=".dialogs.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/SettingsTheme"
-            android:parentActivityName=".NoteListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ianmyrfield.things.NoteListActivity" />
-        </activity>
-        <activity android:name=".dialogs.SettingsDialog"
-                  android:label="Settings"
+
+        <activity android:name=".dialogs.SettingsActivity"
+                  android:label="@string/title_activity_settings"
                   android:theme="@style/AppTheme"
                   android:parentActivityName=".NoteListActivity">
                   <meta-data

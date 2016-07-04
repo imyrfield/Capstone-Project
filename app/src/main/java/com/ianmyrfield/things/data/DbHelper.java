@@ -24,7 +24,6 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate (SQLiteDatabase db) {
 
         // Create the Title Table
-        // TODO:  Not sure if CURRENT_TIMESTAMP will work
         final String CREATE_NOTE_TITLE_TABLE = "CREATE TABLE " +
                 NoteTitles.TABLE_NAME + " (" +
                 NoteTitles._ID + " INTEGER PRIMARY KEY, " +
@@ -57,7 +56,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d( "DbHelper", "Upgrading database from version " + oldVersion + " to " +
                 newVersion + ". OLD DATA WILL BE DESTROYED.");
 
-        // TODO: Currently this drops existing table if DB upgrades.
+        // FIX: Currently this drops existing table if DB upgrades.
         // As the DB is going to store user favorites this likely isn't a good policy
         db.execSQL("DROP IF TABLE EXISTS " + NoteItems.TABLE_NAME);
         db.execSQL("DROP IF TABLE EXISTS " + NoteTitles.TABLE_NAME);
