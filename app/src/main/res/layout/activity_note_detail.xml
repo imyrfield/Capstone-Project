@@ -5,6 +5,9 @@
                                                  android:layout_height="match_parent"
                                                  tools:context="com.ianmyrfield.things.NoteDetailActivity"
                                                  tools:ignore="MergeRootFrame"
+                                                 android:focusable="true"
+                                                 android:focusableInTouchMode="true"
+                                                 android:clickable="true"
     >
 
     <android.support.design.widget.AppBarLayout
@@ -42,6 +45,9 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/note_detail"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         />
 
     <android.support.design.widget.FloatingActionButton

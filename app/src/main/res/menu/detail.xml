@@ -5,6 +5,13 @@
           android:title="@string/action_change_color"
           app:showAsAction="never"
           />
+    <item android:id="@+id/notification_toggle"
+          android:title="@string/action_notification_toggle"
+          app:showAsAction="ifRoom"
+          android:icon="@drawable/btn_notification"
+          android:checked="false"
+          android:enabled="false"
+        />
     <item android:id="@+id/edit_title"
           android:title="@string/action_change_title"
           app:showAsAction="always"

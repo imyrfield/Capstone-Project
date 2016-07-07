@@ -1,6 +1,7 @@
 package com.ianmyrfield.things.dialogs;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,14 +42,15 @@ public class SettingsActivity
 
     public static final  String PREF_SORT_KEY                   = "pref_sort_key";
     public static final  String PREF_NOTIFICATION_FREQUENCY_KEY = "pref_notification_frequency_key";
+    public static final  String PREF_NOTIFICATION_KEY           = "pref_notification_key";
     private static final int    RC_SIGN_IN                      = 100;
-    private TextView mNameTextView;
-    private String   mUserName;
-    private Uri      mProfilePictureUrl;
+    private TextView  mNameTextView;
+    private String    mUserName;
+    private Uri       mProfilePictureUrl;
     private ImageView mImageView;
-    private Button signIn;
-    private Button signOut;
-    private Context mContext;
+    private Button    signIn;
+    private Button    signOut;
+    private Context   mContext;
 
     private static Preference.OnPreferenceChangeListener sPreferenceChangeListener =
             new Preference.OnPreferenceChangeListener() {
@@ -61,10 +64,10 @@ public class SettingsActivity
                         preference.setSummary( index >= 0
                                                ? listPreference.getEntries()[ index ]
                                                : null );
-                    }
-                    else {
+                    }  else {
                         preference.setSummary( stringValue );
                     }
+
                     return true;
                 }
             };
@@ -82,7 +85,7 @@ public class SettingsActivity
         if ( actionBar != null ) {
             actionBar.setDisplayHomeAsUpEnabled( true );
         }
-
+        
         if ( savedInstanceState == null ) {
             getSupportFragmentManager().beginTransaction()
                                        .add( R.id.settings_container,
@@ -108,7 +111,7 @@ public class SettingsActivity
             } );
         }
 
-        if (signOut != null) {
+        if ( signOut != null ) {
             signOut.setOnClickListener( new View.OnClickListener() {
                 @Override public void onClick ( View v ) {
                     AuthUI.getInstance().signOut( SettingsActivity.this )
@@ -153,6 +156,7 @@ public class SettingsActivity
                                                               .getString( preference.getKey(), "" ) );
     }
 
+
     @Override
     protected void onActivityResult ( int requestCode, int resultCode, Intent data ) {
         super.onActivityResult( requestCode, resultCode, data );
@@ -168,7 +172,7 @@ public class SettingsActivity
                                                @Override
                                                public void onClick ( DialogInterface dialog,
                                                                      int which ) {
-                                                    dialog.dismiss();
+                                                   dialog.dismiss();
                                                }
                                            } );
                 builder.show();
@@ -176,35 +180,45 @@ public class SettingsActivity
         }
     }
 
-    private void updateProfileInformation() {
+    private void updateProfileInformation () {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
-        if (auth.getCurrentUser() != null) {
+        if ( auth.getCurrentUser() != null ) {
             FirebaseUser user = auth.getCurrentUser();
 
             mUserName = user.getDisplayName();
-            if (mNameTextView != null && mUserName != null) mNameTextView.setText( mUserName );
+            if ( mNameTextView != null && mUserName != null ) {
+                mNameTextView.setText( mUserName );
+            }
 
             mProfilePictureUrl = user.getPhotoUrl();
             Log.d( "SettingsActivity", "updateProfileInformation (line 168): " + mProfilePictureUrl );
-            if (mImageView != null && mProfilePictureUrl != null) mImageView.setImageURI( mProfilePictureUrl );
+            if ( mImageView != null && mProfilePictureUrl != null ) {
+                Glide.with( this )
+                     .load( mProfilePictureUrl )
+                     .placeholder( android.R.drawable.ic_menu_gallery)
+                     .into( mImageView );
+            }
 
             signIn.setVisibility( View.GONE );
             signOut.setVisibility( View.VISIBLE );
 
-        } else {
+        }
+        else {
 
             signIn.setVisibility( View.VISIBLE );
             signOut.setVisibility( View.GONE );
             mNameTextView.setText( R.string.settings_not_signed_in_message );
             // TODO: copy blank image drawable to project.
-            // mImageView.setImageDrawable(  );
+            Glide.with( this )
+                 .load( android.R.drawable.ic_menu_gallery )
+                 .into( mImageView );
         }
     }
 
     public static class SettingsFragment
-            extends PreferenceFragmentCompat {
+            extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
 
         @Override
         public void onCreate ( Bundle savedInstanceState ) {
@@ -216,6 +230,21 @@ public class SettingsActivity
             addPreferencesFromResource( R.xml.preferences );
             bindPreferenceSummaryToValue( findPreference( PREF_SORT_KEY ) );
             bindPreferenceSummaryToValue( findPreference( PREF_NOTIFICATION_FREQUENCY_KEY ) );
+            findPreference( PREF_NOTIFICATION_KEY ).setOnPreferenceChangeListener( this );
+        }
+    
+        @Override
+        public boolean onPreferenceChange ( Preference preference, Object o ) {
+            Log.d("SettingsFragment", "onPreferenceChange (line 248): ");
+            if (preference.getKey().equals( PREF_NOTIFICATION_KEY) && o.equals( false ) ){
+                Log.d( "SettingsActivity", "onSharedPreferenceChanged (line 221): " );
+                cancelNotifications();
+            }
+            return true;
+        }
+        private void cancelNotifications () {
+            NotificationManager manager = (NotificationManager) getActivity().getSystemService( NOTIFICATION_SERVICE );
+            manager.cancelAll();
         }
     }
 }

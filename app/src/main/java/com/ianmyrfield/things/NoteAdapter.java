@@ -99,14 +99,41 @@ public class NoteAdapter
         return mCursor;
     }
 
+    private void deleteNote(){
+        if (mCursor == null) return;
+        String id = mCursor.getString( NoteListActivity.COL_ID );
+        int deleted = mContext.getContentResolver().delete( NoteContract.NoteTitles
+                                                                    .CONTENT_URI,
+                                                            NoteContract.NoteTitles._ID + " = ?",
+                                                            new String[]{id} );
+        String message;
+        if (deleted > 0 ){
+            message = "Note Deleted!";
+        } else{
+            message = "Failed to delete Note";
+        }
+        Snackbar.make( rootView, message,
+                       Snackbar.LENGTH_LONG )
+                .setAction( "Action", null )
+                .show();
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView (RecyclerView recyclerView) {
+        if (mCursor != null) {
+            mCursor.close();
+        }
+        super.onDetachedFromRecyclerView( recyclerView );
+    }
+
     public class NoteAdapterViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
-
         public final TextView       mTextView;
         public final ImageButton    deleteButton;
         public final ImageButton    exitButton;
         public final ImageButton    shareButton;
         public final RelativeLayout buttonParent;
+
         public final CardView mCardView;
 
         public NoteAdapterViewHolder (View view) {
@@ -125,8 +152,8 @@ public class NoteAdapter
             shareButton = (ImageButton) view.findViewById( R.id.share );
             shareButton.setOnClickListener( this );
 
-            view.setOnClickListener( this );
-            view.setOnLongClickListener( this );
+            mCardView.setOnLongClickListener( this );
+            mCardView.setOnClickListener( this );
         }
 
         @Override
@@ -202,32 +229,6 @@ public class NoteAdapter
                 displayOptions = true;
             }
         }
-    }
 
-    private void deleteNote(){
-        if (mCursor == null) return;
-        String id = mCursor.getString( NoteListActivity.COL_ID );
-        int deleted = mContext.getContentResolver().delete( NoteContract.NoteTitles
-                                                               .CONTENT_URI,
-                                              NoteContract.NoteTitles._ID + " = ?",
-                                              new String[]{id} );
-        String message;
-        if (deleted > 0 ){
-            message = "Note Deleted!";
-        } else{
-            message = "Failed to delete Note";
-        }
-        Snackbar.make( rootView, message,
-                       Snackbar.LENGTH_LONG )
-                .setAction( "Action", null )
-                .show();
-    }
-
-    @Override
-    public void onDetachedFromRecyclerView (RecyclerView recyclerView) {
-        if (mCursor != null) {
-            mCursor.close();
-        }
-        super.onDetachedFromRecyclerView( recyclerView );
     }
 }
