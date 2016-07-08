@@ -45,6 +45,8 @@ public class SignIn
             if (auth.getCurrentUser() != null) {
                 //TODO: setup transition, not being displayed since activity starts right away
                 welcome.setVisibility( View.VISIBLE );
+                String s = welcome.getText() + auth.getCurrentUser().getDisplayName();
+                welcome.setText( s );
                 Log.d( "SignIn", "onCreate (line 47): " );
             }
             // User has not signed in, but has already seen sign in screen

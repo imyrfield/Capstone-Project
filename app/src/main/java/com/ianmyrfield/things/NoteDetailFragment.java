@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -74,6 +75,7 @@ public class NoteDetailFragment
     private TextInputLayout      itemInputLayout;
     private FloatingActionButton mFab;
     private View mEmptyView;
+    private EditText focusedView;
     Context mContext;
     
     public static final String[] NOTE_COLUMNS = { NoteContract.NoteTitles.TABLE_NAME + "." + NoteContract.NoteTitles._ID,
@@ -96,7 +98,34 @@ public class NoteDetailFragment
     public static final int NOTE_ITEM_LOADER = 1;
     private String ID;
     private SharedPreferences mSharedPreferences;
-    
+
+    private Runnable mShowImeRunnable = new Runnable() {
+        public void run() {
+            InputMethodManager imm = (InputMethodManager) getContext()
+                                                                  .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (imm != null) {
+                imm.showSoftInput(getEditView(), 0);
+            }
+        }
+    };
+
+    /**
+     * Helper method for setImeVisibility()
+     * @return
+     */
+    private View getEditView () {
+        return focusedView;
+    }
+
+    /**
+     * Helper method for setImeVisibility()
+     * @param view
+     */
+    private void  setFocusedView(EditText view){
+        focusedView = view;
+    }
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -188,8 +217,6 @@ public class NoteDetailFragment
         final View root = inflater.inflate( R.layout.note_detail, container, false );
         mAddItem = (EditText) root.findViewById( R.id.add_item );
         mAddItem.setOnFocusChangeListener( this );
-        mAddItem.setShowSoftInputOnFocus( true );
-        root.setOnFocusChangeListener( this );
         itemInputLayout = (TextInputLayout) root.findViewById( R.id.input_layout );
 
         // Setup FAB
@@ -202,8 +229,10 @@ public class NoteDetailFragment
                 }
             } );
         }
+
         mEmptyView = root.findViewById( R.id.empty_detail_view );
         mRecyclerView = (RecyclerView) root.findViewById( R.id.note_detail );
+
         if ( mRecyclerView != null ) { setupRecyclerView( mRecyclerView ); }
         
         mToolbar = (Toolbar) getActivity().findViewById( R.id.detail_toolbar );
@@ -224,16 +253,6 @@ public class NoteDetailFragment
                 return handled;
             }
         } );
-        // TODO: touching outside keyboard cancels edit, and closes keyboard.
-        //        mEditTitle.setOnFocusChangeListener( new View.OnFocusChangeListener() {
-        //            @Override
-        //            public void onFocusChange ( View v, boolean hasFocus ) {
-        //
-        //                if ( !hasFocus ) {
-        //
-        //                }
-        //            }
-        //        } );
 
         setupToolBar();
 
@@ -242,11 +261,9 @@ public class NoteDetailFragment
             public boolean onEditorAction ( TextView v, int actionId, KeyEvent event ) {
                 boolean handled = false;
 
-                 if (actionId == EditorInfo.IME_NULL || event.getAction() == KeyEvent
-                                                                                     .KEYCODE_ENTER){
                     saveNewItem();
                     handled = true;
-                }
+
                 return handled;
             }
         } );
@@ -303,20 +320,17 @@ public class NoteDetailFragment
     }
     
     private void editTitle () {
-        
-        // TODO: How to make it loose focus when clicking elsewhere on screen or add enter button to keyboard
+
         if ( mEditTitle.getVisibility() == View.GONE ) {
             mEditTitle.setText( mTitle );
             mEditTitle.setVisibility( View.VISIBLE );
             mToolbar.setTitle( "" );
             mEditTitle.requestFocus();
-            Log.d("NoteDetailFragment", "editTitle (line 291): " + mEditTitle.hasFocus());
         }
         else {
             mEditTitle.clearFocus();
             mEditTitle.setVisibility( View.GONE );
             mToolbar.setTitle( mTitle );
-            Utility.hideKeyboardFrom( mContext, mEditTitle );
         }
     }
 
@@ -327,7 +341,7 @@ public class NoteDetailFragment
         
         // Protects against NPE
         if ( newTitle == null ) {newTitle = mTitle;}
-        
+
         // No change, therefore no need to save.
         if ( newTitle.equals( mTitle ) && newColor == mColor ) {return;}
         
@@ -351,19 +365,17 @@ public class NoteDetailFragment
      * Toggles visibility of FAB and AddItem EditTextView
      */
     private void showNewItemPrompt () {
+        if (itemInputLayout == null || mAddItem == null || mFab == null ) return;
 
         if ( itemInputLayout.getVisibility() == View.GONE ) {
             itemInputLayout.setVisibility( View.VISIBLE );
             mAddItem.requestFocus();
             mFab.setVisibility( View.GONE );
-            Log.d("NoteDetailFragment", "showNewItemPrompt (line 337): " + mAddItem
-                                                                                    .hasFocus());
         }
         else {
             itemInputLayout.setVisibility( View.GONE );
             mAddItem.clearFocus();
             mFab.setVisibility( View.VISIBLE );
-            Utility.hideKeyboardFrom( mContext, mAddItem );
         }
     }
 
@@ -400,21 +412,27 @@ public class NoteDetailFragment
         mAddItem.setOnFocusChangeListener( null );
     }
 
+    /**
+     * Hides EditTextView, and shows the normal view, when focus changes
+     * @param v
+     * @param hasFocus
+     */
     @Override public void onFocusChange ( View v, boolean hasFocus ) {
-        Log.d( TAG, "onFocusChange: " + v.toString());
         switch ( v.getId() ){
             case R.id.edit_title:
-                Log.d("NoteDetailFragment", "onFocusChange (line 384): ");
                 if (!hasFocus){
                     editTitle();
-                    Log.d("NoteDetailFragment", "onFocusChange (line 388): ");
+                } else {
+                    setFocusedView( (EditText) v );
+                    setImeVisibility( hasFocus );
                 }
                 break;
             case R.id.add_item:
-                Log.d("NoteDetailFragment", "onFocusChange (line 392): ");
                 if (!hasFocus) {
-                    Log.d("NoteDetailFragment", "onFocusChange (line 394): ");
                     showNewItemPrompt();
+                } else {
+                    setFocusedView( (EditText) v );
+                    setImeVisibility( hasFocus );
                 }
                 break;
         }
@@ -466,12 +484,15 @@ public class NoteDetailFragment
         manager.cancelAll();
     }
 
-//    private void updateWidget(){
-//        //ListWidgetRemoteViewService.RemoteViewsFactory.onDataSetChanged();
-//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance( mContext );
-//        appWidgetManager.updateAppWidget( new ComponentName( mContext.getPackageName(),
-//                                                             ListWidgetProvider.class.getName()),
-//                                          );
-//
-//    }
+    /**
+     * Shows the Keyboard when EditText gains Focus
+     * @param visible
+     */
+    private void setImeVisibility(final boolean visible) {
+        if (visible) {
+            getEditView().post(mShowImeRunnable);
+        } else {
+            getEditView().removeCallbacks(mShowImeRunnable);
+        }
+    }
 }

@@ -82,14 +82,14 @@ public class AddNoteDialog
                                            AddNoteDialog.this.getDialog().cancel();
                                        }
                                    } );
-
+        final int[] colors = getResources().getIntArray( R.array.colors );
         pickColor.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                new SpectrumDialog.Builder( getContext() ).setColors( getResources().getIntArray(
-                        R.array.colors ) )
+                new SpectrumDialog.Builder( getContext() ).setColors( colors )
                                                           .setDismissOnColorSelected( true )
                                                           .setSelectedColor( mColor )
+                                                          .setFixedColumnCount( colors.length)
                                                           .setOnColorSelectedListener( new SpectrumDialog.OnColorSelectedListener() {
                                                               @Override
                                                               public void onColorSelected (

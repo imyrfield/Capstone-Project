@@ -9,21 +9,12 @@
         android:entryValues="@array/pref_sort_values"
         android:defaultValue="@string/pref_sort_default"
         />
+    <!--Notification Toggle-->
     <SwitchPreferenceCompat
         android:title="@string/pref_notification_title"
         android:key="@string/pref_notification_key"
-        android:disableDependentsState="false"
         android:switchTextOn="@string/notification_on"
         android:switchTextOff="@string/notification_off"
         android:defaultValue="true"
-        />
-    <ListPreference
-        android:title="@string/pref_notification_frequency_title"
-        android:key="@string/pref_notification_frequency_key"
-        android:dialogTitle="@string/pref_notification_frequency_title"
-        android:entries="@array/pref_notification_entries"
-        android:entryValues="@array/pref_notification_values"
-        android:defaultValue="@string/pref_notification_default"
-        android:dependency="pref_notification_key"
         />
 </PreferenceScreen>

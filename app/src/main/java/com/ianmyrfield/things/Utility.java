@@ -3,6 +3,7 @@ package com.ianmyrfield.things;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -11,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class Utility {
 
+    private static final String TAG = "Utility";
     /**
      * Chooses color for notes
      * @param color
@@ -34,9 +36,12 @@ public class Utility {
      * @param view
      */
     public static void hideKeyboardFrom ( Context context, View view ) {
+
+        Log.d( TAG, "hideKeyboardFrom: " + view);
         InputMethodManager imm = (InputMethodManager) context.getSystemService( Activity.INPUT_METHOD_SERVICE );
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
 
 
 }

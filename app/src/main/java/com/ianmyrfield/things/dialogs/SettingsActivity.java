@@ -128,7 +128,6 @@ public class SettingsActivity
         }
 
         updateProfileInformation();
-        // TODO: Tablet Layout - Cardview
     }
 
     @Override
@@ -150,12 +149,9 @@ public class SettingsActivity
     private static void bindPreferenceSummaryToValue ( Preference preference ) {
         preference.setOnPreferenceChangeListener( sPreferenceChangeListener );
         sPreferenceChangeListener.onPreferenceChange( preference,
-                                                      PreferenceManager
-                                                              .getDefaultSharedPreferences( preference
-                                                                                                    .getContext() )
+                                                      PreferenceManager.getDefaultSharedPreferences( preference.getContext() )
                                                               .getString( preference.getKey(), "" ) );
     }
-
 
     @Override
     protected void onActivityResult ( int requestCode, int resultCode, Intent data ) {
@@ -229,7 +225,6 @@ public class SettingsActivity
         public void onCreatePreferences ( Bundle bundle, String s ) {
             addPreferencesFromResource( R.xml.preferences );
             bindPreferenceSummaryToValue( findPreference( PREF_SORT_KEY ) );
-            bindPreferenceSummaryToValue( findPreference( PREF_NOTIFICATION_FREQUENCY_KEY ) );
             findPreference( PREF_NOTIFICATION_KEY ).setOnPreferenceChangeListener( this );
         }
     
@@ -242,6 +237,7 @@ public class SettingsActivity
             }
             return true;
         }
+
         private void cancelNotifications () {
             NotificationManager manager = (NotificationManager) getActivity().getSystemService( NOTIFICATION_SERVICE );
             manager.cancelAll();
