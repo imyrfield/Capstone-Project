@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,25 +30,27 @@ import com.ianmyrfield.things.dialogs.SettingsActivity;
  * item details side-by-side using two vertical panes.
  */
 public class NoteListActivity
-        extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+        extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+                   NoteAdapter.NoteAdapterOnClickHandler {
 
-    public static final String  TAG             = NoteListActivity.class.getSimpleName();
+    public static final  String TAG             = NoteListActivity.class.getSimpleName();
     private static final String DIALOG_ABOUT    = "about";
     private static final String DIALOG_SETTINGS = "add";
-    private NoteAdapter mAdapter;
+    private NoteAdapter  mAdapter;
     private RecyclerView mRecyclerView;
-    private View mEmptyView;
+    private View         mEmptyView;
 
     public static final String[] NOTE_COLUMNS = {
             NoteContract.NoteTitles._ID,
             NoteContract.NoteTitles.COL_TITLE,
             NoteContract.NoteTitles.COL_COLOR,
-    };
+            };
 
-    static final int COL_ID = 0;
-    static final int COL_TITLE = 1;
-    static final int COL_NOTE_COLOR = 2;
-    public static final int NOTE_LOADER = 0;
+    static final        int COL_ID         = 0;
+    static final        int COL_TITLE      = 1;
+    static final        int COL_NOTE_COLOR = 2;
+    public static final int NOTE_LOADER    = 0;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -56,31 +59,31 @@ public class NoteListActivity
     private boolean mTwoPane;
 
     @Override
-    protected void onCreate (Bundle savedInstanceState) {
+    protected void onCreate ( Bundle savedInstanceState ) {
 
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_note_list );
+        mTwoPane = getResources().getBoolean( R.bool.use_detail_activity );
 
         Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );
 
-        if (toolbar != null) toolbar.setTitle( getTitle() );
+        if ( toolbar != null ) toolbar.setTitle( getTitle() );
 
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
 
-        // TODO: 7/3/2016 if (mTwoPane) { // Add + icon to toolbar for NoteList. } else { // Use FAB in NoteList }
-
-        if (fab != null) {
+        if ( fab != null && !mTwoPane) {
 
             fab.setOnClickListener( new View.OnClickListener() {
                 @Override
-                public void onClick (View view) {
+                public void onClick ( View view ) {
                     // For testing Firebase Crash reporting
                     // throw new RuntimeException( "Boom" );
                     AddNoteDialog dialog = new AddNoteDialog();
                     dialog.show( getSupportFragmentManager(), "dialog" );
                 }
             } );
+
         }
 
         mRecyclerView = (RecyclerView) findViewById( R.id.note_list );
@@ -88,33 +91,42 @@ public class NoteListActivity
         assert mRecyclerView != null;
         setupRecyclerView( mRecyclerView, mEmptyView );
 
-        mTwoPane = getResources().getBoolean( R.bool.use_detail_activity );
-
         getLoaderManager().initLoader( NOTE_LOADER, null, this );
     }
 
+    @Override public boolean onPrepareOptionsMenu ( Menu menu ) {
+        if ( mTwoPane ) {
+            menu.findItem( R.id.add_note ).setEnabled( true );
+        }
+        return super.onPrepareOptionsMenu( menu );
+    }
+
     @Override
-    public boolean onCreateOptionsMenu (Menu menu) {
+    public boolean onCreateOptionsMenu ( Menu menu ) {
         getMenuInflater().inflate( R.menu.menu, menu );
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected ( MenuItem item ) {
 
-        String dialog;
-        switch (item.getItemId()){
+        switch ( item.getItemId() ) {
 
             case R.id.about:
-                dialog = DIALOG_ABOUT;
-                createDialog( dialog, null );
+
+                AboutDialog dialog_Fragment = new AboutDialog();
+                dialog_Fragment.show( getFragmentManager(), "dialog" );
                 return true;
 
             case R.id.settings:
                 Intent intent = new Intent( this, SettingsActivity.class );
                 startActivity( intent );
-//                dialog = DIALOG_SETTINGS;
-//                createDialog( dialog, null );
+                return true;
+
+            case R.id.add_note:
+
+                AddNoteDialog dialog = new AddNoteDialog();
+                dialog.show( getSupportFragmentManager(), "dialog" );
                 return true;
 
             default:
@@ -127,12 +139,11 @@ public class NoteListActivity
         moveTaskToBack( true );
     }
 
-    private void setupRecyclerView (@NonNull RecyclerView recyclerView, @NonNull View
-            emptyView) {
+    private void setupRecyclerView ( @NonNull RecyclerView recyclerView, @NonNull View
+                                                                                 emptyView ) {
 
         mAdapter = new NoteAdapter( this, new NoteAdapter.NoteAdapterOnClickHandler() {
-            @Override
-            public void onClick (NoteAdapter.NoteAdapterViewHolder vh) {
+            @Override public void onClick ( Bundle bundle ) {
             }
         }, emptyView );
 
@@ -140,40 +151,47 @@ public class NoteListActivity
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader (int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader ( int id, Bundle args ) {
 
-        if (id == 0) {
+        if ( id == 0 ) {
             return new CursorLoader( this,
                                      NoteContract.NoteTitles.CONTENT_URI,
                                      NOTE_COLUMNS,
                                      null,
                                      null,
                                      null );
-        } else {
+        }
+        else {
             return null;
         }
     }
 
     @Override
-    public void onLoaderReset (Loader<Cursor> loader) {
+    public void onLoaderReset ( Loader<Cursor> loader ) {
         mAdapter.swapCursor( null );
     }
 
     @Override
-    public void onLoadFinished (Loader<Cursor> loader, final Cursor data) {
+    public void onLoadFinished ( Loader<Cursor> loader, final Cursor data ) {
 
         mAdapter.swapCursor( data );
     }
+    
+    @Override public void onClick ( Bundle bundle ) {
+        String tag = bundle.getString( NoteDetailFragment.ARG_TITLE );
 
-    public void createDialog (String dialog, Bundle args) {
+        Log.d( "NoteListActivity", "onClick (line 186): " + tag );
 
-        switch (dialog) {
-
-            case ( DIALOG_ABOUT ):
-
-                AboutDialog dialog_Fragment = new AboutDialog();
-                dialog_Fragment.show( getFragmentManager(), "dialog" );
-                break;
+        if ( getSupportFragmentManager().findFragmentByTag( tag ) == null ) {
+            NoteDetailFragment fragment = new NoteDetailFragment();
+            fragment.setArguments( bundle );
+            getSupportFragmentManager().beginTransaction()
+                                       .replace( R.id.note_detail_container, fragment, tag )
+                                       .commit();
         }
+//        else {
+//            getSupportFragmentManager().beginTransaction().replace( R.id
+//                                                                            .note_detail_container, new NoteDetailFragment() , tag);
+//        }
     }
 }

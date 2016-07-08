@@ -1,25 +1,7 @@
+
 <resources>
+
     <string name="app_name">Things</string>
-
-    <!--Dialogs -->
-    <string name="add_note_dialog_title">Add new Note:</string>
-    <string name="dialog_input_hint">i.e. Groceries, Birthday, etc.</string>
-    <string name="button_pick_color_title">Color</string>
-    <string name="add_note_dialog_confirmation">Add</string>
-    <string name="add_note_dialog_cancel">Cancel</string>
-    <string name="widget_picker">Pick a list:</string>
-
-    <!--Detail Activity-->
-    <string name="title_note_detail">Note Detail</string>
-
-    <!--About-->
-    <string name="about">About</string>
-    <string name="about_text">This app is a simple to-do app. It was created as a final project for the Udacity Android Nanodegree.</string>
-    <string name="dialog_about_confirmation">OK</string>
-
-    <!--Menu-->
-    <string name="action_about">About</string>
-    <string name="action_settings">Settings</string>
 
     <!--Sign In-->
     <string name="welcome_back_message">Welcome Back!</string>
@@ -27,16 +9,39 @@
     <string name="skip_button">Skip >></string>
     <string name="error_sign_in_failed">Sign in failed. Please try again later.</string>
 
+    <!--Detail Activity-->
+    <string name="title_note_detail">Note Detail</string>
+    <string name="edit_text_hint_add_item">Add another item to your list...</string>
+
+    <!--About-->
+    <string name="about">About</string>
+    <string name="about_text">This app is a simple to-do app. It was created as a final project for the Udacity Android Nanodegree.</string>
+    <string name="dialog_about_confirmation">OK</string>
+
+    <!--Menu Main -->
+    <string name="action_about">About</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add">Add</string>
+
+    <!--Menu Detail-->
+    <string name="action_notification_toggle">Show Notification</string>
+    <string name="action_change_title">Change Title</string>
+    <string name="action_cancel_title_edit">Cancel</string>
+    <string name="action_change_color">Change Color</string>
+
     <!--Settings-->
     <string name="title_activity_settings">Settings</string>
 
-    <!--Account-->
+    <!--Account Settings-->
     <string name="pref_first_load">pref_first_load</string>
     <string name="pref_file_name">prefs</string>
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign In</string>
+    <string name="settings_not_signed_in_message">Sign in to link account</string>
 
-    <!--Sort-->
+    <!--Sort Settings-->
     <string name="pref_sort_title">Sort Method</string>
     <string name="pref_sort_key">pref_sort_key</string>
     <string name="pref_sort_default">DESC</string>
@@ -44,29 +49,32 @@
     <string-array name="pref_sort_entry_titles">
         <item>Newest First</item>
         <item>Oldest First</item>
+
     </string-array>
     <string-array name="pref_sort_values">
         <item>DESC</item>
         <item>ASC</item>
     </string-array>
 
-    <!--Notifications-->
+    <!--Notification Settings-->
     <string name="pref_notification_title">Notifications</string>
     <string name="pref_notification_key">pref_notification_key</string>
     <string name="notification_on">On</string>
     <string name="notification_off">Off</string>
 
-    <string name="sign_out">Sign Out</string>
-    <string name="sign_in">Sign In</string>
-    <string name="settings_not_signed_in_message">Sign in to link account</string>
-    <string name="empty_view_text">No items added yet</string>
-    <string name="action_change_color">Change Color</string>
-    <string name="action_change_title">Change Title</string>
-    <string name="action_add">Add</string>
-    <string name="action_cancel_title_edit">Cancel</string>
-    <string name="edit_text_hint_add_item">Add another item to your list...</string>
+    <!--Notifications-->
     <string name="notification_message">Don\'t Forget!</string>
-    <string name="action_notification_toggle">Show Notification</string>
-    <string name="widget_empty_view">Nothing to do!</string>
 
+    <!--Dialogs -->
+    <string name="add_note_dialog_title">Add new Note:</string>
+    <string name="dialog_input_hint">i.e. Groceries, Birthday, etc.</string>
+    <string name="button_pick_color_title">Color</string>
+    <string name="add_note_dialog_confirmation">Add</string>
+    <string name="add_note_dialog_cancel">Cancel</string>
+    <string name="empty_view_text">No items added yet</string>
+
+    <!--Widget-->
+    <string name="widget_picker">Pick a list:</string>
+    <string name="widget_empty_view">Nothing to do!</string>
+    <string name="action_add_note">Add Note</string>
 </resources>

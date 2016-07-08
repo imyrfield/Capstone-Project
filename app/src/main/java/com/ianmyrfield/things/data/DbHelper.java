@@ -56,7 +56,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d( "DbHelper", "Upgrading database from version " + oldVersion + " to " +
                 newVersion + ". OLD DATA WILL BE DESTROYED.");
 
-        // FIX: Currently this drops existing table if DB upgrades.
+        // TODO: Currently this drops existing table if DB upgrades.
         // As the DB is going to store user favorites this likely isn't a good policy
         db.execSQL("DROP IF TABLE EXISTS " + NoteItems.TABLE_NAME);
         db.execSQL("DROP IF TABLE EXISTS " + NoteTitles.TABLE_NAME);

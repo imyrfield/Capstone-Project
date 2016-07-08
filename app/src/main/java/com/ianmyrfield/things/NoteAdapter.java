@@ -35,7 +35,7 @@ public class NoteAdapter
     private View mEmptyView;
 
     public interface NoteAdapterOnClickHandler {
-        void onClick (NoteAdapterViewHolder vh);
+        void onClick ( Bundle bundle);
     }
 
     public NoteAdapter (Context context, NoteAdapterOnClickHandler clickHandler, View emptyView) {
@@ -161,7 +161,9 @@ public class NoteAdapter
             int pos = getAdapterPosition();
             mCursor.moveToPosition( pos );
             switch (v.getId()) {
+
                 case R.id.delete:
+
                     Log.d( TAG, "onClick: delete button" );
                     AlertDialog.Builder builder = new AlertDialog.Builder( mContext );
 
@@ -181,10 +183,14 @@ public class NoteAdapter
                     AlertDialog dialog = builder.create();
                     dialog.show();
                     return;
+
                 case R.id.exit:
+
                     showButtons();
                     return;
+
                 case R.id.share:
+
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                     shareIntent.setType("text/plain");
@@ -192,18 +198,21 @@ public class NoteAdapter
                     shareIntent.putExtra(Intent.EXTRA_TEXT, "My Note");
                     mContext.startActivity( shareIntent );
                     return;
-                default:
-                    if(buttonParent.getVisibility() != View.VISIBLE) {
-                        if (mTwoPane) {
-                            Snackbar.make( v, "2Pain! Card clicked!", Snackbar.LENGTH_LONG )
-                                    .setAction( "Action", null )
-                                    .show();
-                        } else {
 
-                            Bundle bundle = new Bundle( );
-                            bundle.putInt( NoteDetailFragment.ARG_ITEM_ID, mCursor.getInt( NoteListActivity.COL_ID ));
-                            bundle.putString( NoteDetailFragment.ARG_TITLE, mCursor.getString( NoteListActivity.COL_TITLE ) );
-                            bundle.putInt( NoteDetailFragment.ARG_COLOR , mCursor.getInt( NoteListActivity.COL_NOTE_COLOR ) );
+                default:
+
+                    if(buttonParent.getVisibility() != View.VISIBLE) {
+
+                        Bundle bundle = new Bundle( );
+                        bundle.putInt( NoteDetailFragment.ARG_ITEM_ID, mCursor.getInt( NoteListActivity.COL_ID ));
+                        bundle.putString( NoteDetailFragment.ARG_TITLE, mCursor.getString( NoteListActivity.COL_TITLE ) );
+                        bundle.putInt( NoteDetailFragment.ARG_COLOR , mCursor.getInt( NoteListActivity.COL_NOTE_COLOR ) );
+
+                        if (mTwoPane) {
+
+                            ((NoteAdapterOnClickHandler) mContext).onClick( bundle );
+
+                        } else {
 
                             Intent intent = new Intent( mContext, NoteDetailActivity.class);
                             intent.putExtras( bundle );

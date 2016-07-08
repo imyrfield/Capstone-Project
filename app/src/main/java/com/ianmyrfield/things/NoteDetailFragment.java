@@ -50,7 +50,7 @@ public class NoteDetailFragment
         extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
                    SharedPreferences.OnSharedPreferenceChangeListener,
-                   View.OnFocusChangeListener{
+                   View.OnFocusChangeListener {
     
     private static final String TAG = "NoteDetailFragment";
     
@@ -74,8 +74,8 @@ public class NoteDetailFragment
     private Toolbar              mToolbar;
     private TextInputLayout      itemInputLayout;
     private FloatingActionButton mFab;
-    private View mEmptyView;
-    private EditText focusedView;
+    private View                 mEmptyView;
+    private EditText             focusedView;
     Context mContext;
     
     public static final String[] NOTE_COLUMNS = { NoteContract.NoteTitles.TABLE_NAME + "." + NoteContract.NoteTitles._ID,
@@ -93,25 +93,26 @@ public class NoteDetailFragment
     static final int COL_REMINDER     = 5;
 
     public static final int notificationId = 1;
-    public static String  notificationTag;
+    public static String notificationTag;
 
     public static final int NOTE_ITEM_LOADER = 1;
-    private String ID;
+    private String            ID;
     private SharedPreferences mSharedPreferences;
 
     private Runnable mShowImeRunnable = new Runnable() {
-        public void run() {
+        public void run () {
             InputMethodManager imm = (InputMethodManager) getContext()
-                                                                  .getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                                  .getSystemService( Context.INPUT_METHOD_SERVICE );
 
-            if (imm != null) {
-                imm.showSoftInput(getEditView(), 0);
+            if ( imm != null ) {
+                imm.showSoftInput( getEditView(), 0 );
             }
         }
     };
 
     /**
      * Helper method for setImeVisibility()
+     *
      * @return
      */
     private View getEditView () {
@@ -120,9 +121,10 @@ public class NoteDetailFragment
 
     /**
      * Helper method for setImeVisibility()
+     *
      * @param view
      */
-    private void  setFocusedView(EditText view){
+    private void setFocusedView ( EditText view ) {
         focusedView = view;
     }
 
@@ -157,9 +159,10 @@ public class NoteDetailFragment
 
     @Override public void onPrepareOptionsMenu ( Menu menu ) {
         super.onPrepareOptionsMenu( menu );
-        if (!mSharedPreferences.getBoolean( SettingsActivity.PREF_NOTIFICATION_KEY, false )) {
+        if ( !mSharedPreferences.getBoolean( SettingsActivity.PREF_NOTIFICATION_KEY, false ) ) {
             menu.findItem( R.id.notification_toggle ).setEnabled( false );
-        } else {
+        }
+        else {
             menu.findItem( R.id.notification_toggle ).setEnabled( true );
         }
     }
@@ -236,39 +239,43 @@ public class NoteDetailFragment
         if ( mRecyclerView != null ) { setupRecyclerView( mRecyclerView ); }
         
         mToolbar = (Toolbar) getActivity().findViewById( R.id.detail_toolbar );
-        mEditTitle = (EditText) getActivity().findViewById( R.id.edit_title );
-        mEditTitle.setOnFocusChangeListener( this );
-        mEditTitle.setOnEditorActionListener( new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction ( TextView v, int actionId, KeyEvent event ) {
-                boolean handled = false;
-                if ( actionId == EditorInfo.IME_ACTION_DONE
-                             || event.getAction() == KeyEvent.KEYCODE_ENTER ) {
-                    newTitle = mEditTitle.getText().toString();
-                    Log.d( TAG, "onEditorAction: newTitle: " + newTitle );
-                    saveChanges();
-                    editTitle();
-                    handled = true;
+       mEditTitle = (EditText) getActivity().findViewById( R.id.edit_title );
+        if ( mEditTitle != null ) {
+            mEditTitle.setOnFocusChangeListener( this );
+            mEditTitle.setOnEditorActionListener( new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction ( TextView v, int actionId,
+                                                KeyEvent event ) {
+                    boolean handled = false;
+                    if ( actionId == EditorInfo.IME_ACTION_DONE
+                                 || event.getAction() == KeyEvent.KEYCODE_ENTER ) {
+                        newTitle = mEditTitle.getText().toString();
+                        Log.d( TAG, "onEditorAction: newTitle: " + newTitle );
+                        saveChanges();
+                        editTitle();
+                        handled = true;
+                    }
+                    return handled;
                 }
-                return handled;
-            }
-        } );
-
+            } );
+        }
         setupToolBar();
-
-        mAddItem.setOnEditorActionListener( new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction ( TextView v, int actionId, KeyEvent event ) {
-                boolean handled = false;
+        if ( mAddItem != null ) {
+            mAddItem.setOnEditorActionListener( new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction ( TextView v, int actionId,
+                                                KeyEvent event ) {
+                    boolean handled = false;
 
                     saveNewItem();
                     handled = true;
 
-                return handled;
-            }
-        } );
+                    return handled;
+                }
+            } );
+        }
 
-            return root;
+        return root;
     }
     
     private void setupRecyclerView ( RecyclerView recyclerView ) {
@@ -280,9 +287,9 @@ public class NoteDetailFragment
     public Loader<Cursor> onCreateLoader ( int id, Bundle args ) {
 
         if ( id == 1 ) {
-                String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " " + mSortPref;
-                Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
-            Log.d("NoteDetailFragment", "onCreateLoader (line 232): " + uri.toString());
+            String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " " + mSortPref;
+            Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
+            Log.d( "NoteDetailFragment", "onCreateLoader (line 232): " + uri.toString() );
             return new CursorLoader( mContext, uri, NOTE_COLUMNS, null, null, sortOrder );
         }
         else {
@@ -304,7 +311,7 @@ public class NoteDetailFragment
     public void onSharedPreferenceChanged ( SharedPreferences sharedPreferences,
                                             String key ) {
 
-        if (key.equals( SettingsActivity.PREF_SORT_KEY )){
+        if ( key.equals( SettingsActivity.PREF_SORT_KEY ) ) {
             mSortPref = sharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
             getLoaderManager().restartLoader( NOTE_ITEM_LOADER, null, this );
         }
@@ -365,7 +372,7 @@ public class NoteDetailFragment
      * Toggles visibility of FAB and AddItem EditTextView
      */
     private void showNewItemPrompt () {
-        if (itemInputLayout == null || mAddItem == null || mFab == null ) return;
+        if ( itemInputLayout == null || mAddItem == null || mFab == null ) return;
 
         if ( itemInputLayout.getVisibility() == View.GONE ) {
             itemInputLayout.setVisibility( View.VISIBLE );
@@ -384,8 +391,8 @@ public class NoteDetailFragment
      */
     private void saveNewItem () {
 
-        String        s             = mAddItem.getText().toString();
-        if ( s.length() < 1){ return; }
+        String s = mAddItem.getText().toString();
+        if ( s.length() < 1 ) { return; }
         mAddItem.setText( "" );
 
         ContentValues contentValues = new ContentValues();
@@ -408,29 +415,32 @@ public class NoteDetailFragment
     @Override public void onDetach () {
         super.onDetach();
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener( this );
-        mEditTitle.setOnFocusChangeListener( null );
+//        mEditTitle.setOnFocusChangeListener( null );
         mAddItem.setOnFocusChangeListener( null );
     }
 
     /**
      * Hides EditTextView, and shows the normal view, when focus changes
+     *
      * @param v
      * @param hasFocus
      */
     @Override public void onFocusChange ( View v, boolean hasFocus ) {
-        switch ( v.getId() ){
+        switch ( v.getId() ) {
             case R.id.edit_title:
-                if (!hasFocus){
+                if ( !hasFocus ) {
                     editTitle();
-                } else {
+                }
+                else {
                     setFocusedView( (EditText) v );
                     setImeVisibility( hasFocus );
                 }
                 break;
             case R.id.add_item:
-                if (!hasFocus) {
+                if ( !hasFocus ) {
                     showNewItemPrompt();
-                } else {
+                }
+                else {
                     setFocusedView( (EditText) v );
                     setImeVisibility( hasFocus );
                 }
@@ -438,36 +448,39 @@ public class NoteDetailFragment
         }
     }
 
-    private void toggleNotificationIcon(MenuItem item){
+    private void toggleNotificationIcon ( MenuItem item ) {
         //FIX: Checked state looks the same.
-        if(!item.isChecked()){
+        if ( !item.isChecked() ) {
             item.setChecked( true );
             createNotification();
-        } else {
+        }
+        else {
             item.setChecked( false );
             cancelNotifications();
         }
     }
 
-    private void createNotification(){
+    private void createNotification () {
 
         // Notifications turned off.
-        if (!mSharedPreferences.getBoolean( SettingsActivity.PREF_NOTIFICATION_KEY, false )) return;
+        if ( !mSharedPreferences.getBoolean( SettingsActivity.PREF_NOTIFICATION_KEY, false ) ) {
+            return;
+        }
         // The Intent/Action
         Intent intent = getActivity().getIntent();
 
         // Fake Backstack
         // FIX: just going back to home screen on back pressed
         TaskStackBuilder stackBuilder = TaskStackBuilder.create( mContext );
-        stackBuilder.addParentStack(NoteDetailActivity.class);
-        stackBuilder.addNextIntent(intent);
+        stackBuilder.addParentStack( NoteDetailActivity.class );
+        stackBuilder.addNextIntent( intent );
         PendingIntent nextIntent = stackBuilder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder( mContext ).setSmallIcon(android.R.color.transparent);
-        mBuilder.setSmallIcon( R.mipmap.ic_launcher  )
-//                .setLargeIcon(largeIcon())
-                .setContentTitle(mTitle)
-                .setContentText(mContext.getString( R.string.notification_message ) )
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder( mContext ).setSmallIcon( android.R.color.transparent );
+        mBuilder.setSmallIcon( R.mipmap.ic_launcher )
+                //                .setLargeIcon(largeIcon())
+                .setContentTitle( mTitle )
+                .setContentText( mContext.getString( R.string.notification_message ) )
                 .setOngoing( true )
                 .setVisibility( NotificationCompat.VISIBILITY_PUBLIC ) // LockScreen
                 .setContentIntent( nextIntent );
@@ -476,7 +489,7 @@ public class NoteDetailFragment
         n.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
 
         NotificationManager mManager = (NotificationManager) mContext.getSystemService( Context.NOTIFICATION_SERVICE );
-        mManager.notify(notificationTag, notificationId, n);
+        mManager.notify( notificationTag, notificationId, n );
     }
 
     private void cancelNotifications () {
@@ -486,13 +499,15 @@ public class NoteDetailFragment
 
     /**
      * Shows the Keyboard when EditText gains Focus
+     *
      * @param visible
      */
-    private void setImeVisibility(final boolean visible) {
-        if (visible) {
-            getEditView().post(mShowImeRunnable);
-        } else {
-            getEditView().removeCallbacks(mShowImeRunnable);
+    private void setImeVisibility ( final boolean visible ) {
+        if ( visible ) {
+            getEditView().post( mShowImeRunnable );
+        }
+        else {
+            getEditView().removeCallbacks( mShowImeRunnable );
         }
     }
 }

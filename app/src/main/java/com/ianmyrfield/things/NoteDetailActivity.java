@@ -46,7 +46,7 @@ public class NoteDetailActivity
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments( arguments );
             getSupportFragmentManager().beginTransaction()
-                                       .add( R.id.note_detail_container, fragment )
+                                       .add( R.id.note_detail_container, fragment, "detail" )
                                        .commit();
         }
     }
