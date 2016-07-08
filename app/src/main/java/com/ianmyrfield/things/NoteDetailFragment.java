@@ -91,6 +91,8 @@ public class NoteDetailFragment
     static final int COL_REMINDER     = 5;
 
     public static final int notificationId = 1;
+    public static String  notificationTag;
+
     public static final int NOTE_ITEM_LOADER = 1;
     private String ID;
     private SharedPreferences mSharedPreferences;
@@ -114,7 +116,7 @@ public class NoteDetailFragment
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences( mContext );
         mSharedPreferences.registerOnSharedPreferenceChangeListener( this );
         mSortPref = mSharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
-
+        notificationTag = ID;
         getLoaderManager().initLoader( NOTE_ITEM_LOADER, null, this );
     }
 
@@ -261,8 +263,8 @@ public class NoteDetailFragment
     public Loader<Cursor> onCreateLoader ( int id, Bundle args ) {
 
         if ( id == 1 ) {
-            String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " " + mSortPref;
-            Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
+                String sortOrder = NoteContract.NoteItems.COL_CREATED_DATE + " " + mSortPref;
+                Uri    uri       = NoteContract.NoteItems.buildNoteWithTitleUri( ID );
             Log.d("NoteDetailFragment", "onCreateLoader (line 232): " + uri.toString());
             return new CursorLoader( mContext, uri, NOTE_COLUMNS, null, null, sortOrder );
         }
@@ -439,13 +441,13 @@ public class NoteDetailFragment
         // Fake Backstack
         // FIX: just going back to home screen on back pressed
         TaskStackBuilder stackBuilder = TaskStackBuilder.create( mContext );
-        stackBuilder.addParentStack(NoteListActivity.class);
+        stackBuilder.addParentStack(NoteDetailActivity.class);
         stackBuilder.addNextIntent(intent);
         PendingIntent nextIntent = stackBuilder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder( mContext ).setSmallIcon(android.R.color.transparent);
         mBuilder.setSmallIcon( R.mipmap.ic_launcher  )
-                //TODO: .setLargeIcon()
+//                .setLargeIcon(largeIcon())
                 .setContentTitle(mTitle)
                 .setContentText(mContext.getString( R.string.notification_message ) )
                 .setOngoing( true )
@@ -456,11 +458,20 @@ public class NoteDetailFragment
         n.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
 
         NotificationManager mManager = (NotificationManager) mContext.getSystemService( Context.NOTIFICATION_SERVICE );
-        mManager.notify(notificationId, n);
+        mManager.notify(notificationTag, notificationId, n);
     }
 
     private void cancelNotifications () {
         NotificationManager manager = (NotificationManager) mContext.getSystemService( Context.NOTIFICATION_SERVICE );
         manager.cancelAll();
     }
+
+//    private void updateWidget(){
+//        //ListWidgetRemoteViewService.RemoteViewsFactory.onDataSetChanged();
+//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance( mContext );
+//        appWidgetManager.updateAppWidget( new ComponentName( mContext.getPackageName(),
+//                                                             ListWidgetProvider.class.getName()),
+//                                          );
+//
+//    }
 }

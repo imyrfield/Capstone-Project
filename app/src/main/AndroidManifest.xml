@@ -36,17 +36,38 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ianmyrfield.things.NoteListActivity" />
         </activity>
-
-        <activity android:name=".dialogs.SettingsActivity"
-                  android:label="@string/title_activity_settings"
-                  android:theme="@style/AppTheme"
-                  android:parentActivityName=".NoteListActivity">
-                  <meta-data
-                      android:name="android.support.PARENT_ACTIVITY"
-                      android:value="com.ianmyrfield.things.NoteListActivity"/>
+        <activity
+            android:name=".dialogs.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".NoteListActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ianmyrfield.things.NoteListActivity" />
         </activity>
+        <activity
+            android:name=".widget.WidgetConfig"
+            android:label="@string/widget_picker"
+            android:theme="@style/WidgetConfig">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".data.NoteProvider"
             android:authorities="com.ianmyrfield.things" />
+        <receiver
+            android:name=".widget.ListWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/note_widget_info" />
+        </receiver>
+        <service
+            android:name=".widget.ListWidgetRemoteViewService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 </manifest>

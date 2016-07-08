@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/widget"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              style="@style/Theme.AppCompat.Light.Dialog"
+              android:background="@android:drawable/screen_background_light_transparent"
+    >
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:gravity="center"
+        tools:text="Groceries"
+        android:padding="8dp"
+        android:textColor="@android:color/primary_text_light"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:background="@android:drawable/screen_background_light"
+      />
+
+    <ListView
+        android:id="@+id/widget_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/widget_item"
+        />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/widget_empty_view"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/secondary_text_light"
+        android:gravity="center"
+        android:textSize="20sp"
+        />
+</LinearLayout>
