@@ -10,13 +10,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/half_margin"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="@dimen/double_padding"
         >
 
         <ImageView
             android:id="@+id/profile_pic"
+            android:contentDescription="@string/content_description_profile_picture"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -30,11 +31,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/half_margin"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/settings_not_signed_in_message"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_large"
             />
     </LinearLayout>
 
@@ -47,7 +48,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:text="@string/sign_in"
         android:textColor="@color/colorPrimary"
-        android:textSize="15sp"
+        android:textSize="@dimen/text_normal"
         />
 
     <Button
@@ -66,6 +67,6 @@
         android:id="@+id/settings_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/half_margin"
         />
 </LinearLayout>

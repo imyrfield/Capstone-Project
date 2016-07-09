@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--TODO: UpdatePeriod / PreviewImage -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                     android:configure="com.ianmyrfield.things.widget.WidgetConfig"
                     android:icon="@drawable/ic_icon"
                     android:initialLayout="@layout/note_widget"
                     android:minHeight="110dp"
                     android:minWidth="110dp"
-                    android:previewImage="@drawable/ic_icon"
+                    android:previewImage="@drawable/Things_ori_portrait"
                     android:resizeMode="horizontal|vertical"
                     android:updatePeriodMillis="0"
                     android:widgetCategory="home_screen"

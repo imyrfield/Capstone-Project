@@ -23,6 +23,6 @@
         android:layout_marginBottom="?android:actionBarSize"
         android:gravity="center"
         android:text="@string/empty_view_text"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_large"
         />
 </FrameLayout>

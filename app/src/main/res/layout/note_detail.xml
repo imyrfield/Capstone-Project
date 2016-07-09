@@ -1,55 +1,101 @@
-<LinearLayout
-    android:id="@+id/note_detail_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 tools:context="com.ianmyrfield.things.NoteDetailActivity"
+                                                 tools:ignore="MergeRootFrame"
     >
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/text_margin"
-        android:orientation="vertical"
-        android:background="@color/light_grey"
-        android:paddingBottom="10dp"
-        android:visibility="gone"
-        tools:visibility="visible"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         >
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/add_item"
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/detail_toolbar"
             android:layout_width="match_parent"
-            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            >
+
+            <EditText
+                android:id="@+id/edit_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="textAutoCorrect|textCapSentences"
+                android:maxLines="1"
+                android:visibility="gone"
+                tools:text="Groceries"
+                />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/details_top_margin"
+        android:id="@+id/note_detail_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/layout_margin"
             android:background="@color/light_grey"
-            android:hint="@string/edit_text_hint_add_item"
-            android:inputType="textAutoCorrect|textCapSentences"
-            android:imeActionLabel="@string/action_add"
-            android:imeOptions="actionDone"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/add_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_grey"
+                android:gravity="center_vertical"
+                android:hint="@string/edit_text_hint_add_item"
+                android:imeActionLabel="@string/action_add"
+                android:imeOptions="actionDone"
+                android:inputType="textAutoCorrect|textCapSentences"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/note_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/double_padding"
+            app:layoutManager="LinearLayoutManager"
+            tools:context="com.ianmyrfield.things.NoteDetailFragment"
+            tools:listitem="@layout/note_item"
             />
-    </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/note_detail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="com.ianmyrfield.things.NoteDetailFragment"
-        tools:listitem="@layout/note_item"
-        />
+        <TextView
+            android:id="@+id/empty_detail_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?android:actionBarSize"
+            android:gravity="center"
+            android:text="@string/empty_view_text"
+            android:textSize="@dimen/text_large"
+            />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/empty_detail_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="?android:actionBarSize"
-        android:gravity="center"
-        android:text="@string/empty_view_text"
-        android:textSize="20sp"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/detail_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add"
         />
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

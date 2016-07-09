@@ -41,18 +41,14 @@ public class SettingsActivity
         extends AppCompatActivity {
 
     public static final  String PREF_SORT_KEY                   = "pref_sort_key";
-    public static final  String PREF_NOTIFICATION_FREQUENCY_KEY = "pref_notification_frequency_key";
     public static final  String PREF_NOTIFICATION_KEY           = "pref_notification_key";
     private static final int    RC_SIGN_IN                      = 100;
     private TextView  mNameTextView;
-    private String    mUserName;
-    private Uri       mProfilePictureUrl;
     private ImageView mImageView;
     private Button    signIn;
     private Button    signOut;
-    private Context   mContext;
 
-    private static Preference.OnPreferenceChangeListener sPreferenceChangeListener =
+    private static final Preference.OnPreferenceChangeListener sPreferenceChangeListener =
             new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange ( Preference preference, Object o ) {
@@ -76,7 +72,7 @@ public class SettingsActivity
     protected void onCreate ( @Nullable Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.settings_activity );
-        mContext = this;
+        Context context = this;
         Toolbar toolbar = (Toolbar) findViewById( R.id.settings_toolbar );
         setSupportActionBar( toolbar );
 
@@ -183,16 +179,16 @@ public class SettingsActivity
         if ( auth.getCurrentUser() != null ) {
             FirebaseUser user = auth.getCurrentUser();
 
-            mUserName = user.getDisplayName();
-            if ( mNameTextView != null && mUserName != null ) {
-                mNameTextView.setText( mUserName );
+            String userName = user.getDisplayName();
+            if ( mNameTextView != null && userName != null ) {
+                mNameTextView.setText( userName );
             }
 
-            mProfilePictureUrl = user.getPhotoUrl();
-            Log.d( "SettingsActivity", "updateProfileInformation (line 168): " + mProfilePictureUrl );
-            if ( mImageView != null && mProfilePictureUrl != null ) {
+            Uri profilePictureUrl = user.getPhotoUrl();
+            Log.d( "SettingsActivity", "updateProfileInformation (line 168): " + profilePictureUrl );
+            if ( mImageView != null && profilePictureUrl != null ) {
                 Glide.with( this )
-                     .load( mProfilePictureUrl )
+                     .load( profilePictureUrl )
                      .placeholder( android.R.drawable.ic_menu_gallery)
                      .into( mImageView );
             }
@@ -206,7 +202,6 @@ public class SettingsActivity
             signIn.setVisibility( View.VISIBLE );
             signOut.setVisibility( View.GONE );
             mNameTextView.setText( R.string.settings_not_signed_in_message );
-            // TODO: copy blank image drawable to project.
             Glide.with( this )
                  .load( android.R.drawable.ic_menu_gallery )
                  .into( mImageView );

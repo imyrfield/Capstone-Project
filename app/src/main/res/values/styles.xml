@@ -6,9 +6,11 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/slide_bottom</item>
     </style>
 
-    <!--TODO: What's the point of this??-->
     <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="popupTheme">@style/Theme.AppCompat.Light</item>
@@ -27,6 +29,9 @@
     <!--App Launch Theme-->
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/launch_screen</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowExitTransition">@android:transition/slide_bottom</item>
+
     </style>
     
     <!--FireBase Login Theme-->
@@ -37,6 +42,9 @@
         <item name="android:windowBackground">@drawable/launch_screen</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
     </style>
 
     <!--Theme for crash screen-->

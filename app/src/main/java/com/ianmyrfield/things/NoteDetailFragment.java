@@ -20,6 +20,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -53,7 +55,7 @@ public class NoteDetailFragment
                    View.OnFocusChangeListener {
     
     private static final String TAG = "NoteDetailFragment";
-    
+    public static final String ACTION_DATA_UPDATED = "com.ianmyrfield.things.app.ACTION_DATA_UPDATED";
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_TITLE   = "title";
     public static final String ARG_COLOR   = "color";
@@ -77,6 +79,7 @@ public class NoteDetailFragment
     private View                 mEmptyView;
     private EditText             focusedView;
     Context mContext;
+    private boolean mTwoPane;
     
     public static final String[] NOTE_COLUMNS = { NoteContract.NoteTitles.TABLE_NAME + "." + NoteContract.NoteTitles._ID,
                                                   NoteContract.NoteTitles.COL_TITLE,
@@ -95,11 +98,11 @@ public class NoteDetailFragment
     public static final int notificationId = 1;
     public static String notificationTag;
 
-    public static final int NOTE_ITEM_LOADER = 1;
+    private static final int NOTE_ITEM_LOADER = 1;
     private String            ID;
     private SharedPreferences mSharedPreferences;
 
-    private Runnable mShowImeRunnable = new Runnable() {
+    private final Runnable mShowImeRunnable = new Runnable() {
         public void run () {
             InputMethodManager imm = (InputMethodManager) getContext()
                                                                   .getSystemService( Context.INPUT_METHOD_SERVICE );
@@ -139,6 +142,7 @@ public class NoteDetailFragment
     public void onCreate ( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        mTwoPane = getResources().getBoolean( R.bool.use_detail_activity );
         mContext = getContext();
         setHasOptionsMenu( true );
         ID = String.valueOf( getArguments().getInt( ARG_ITEM_ID ) );
@@ -149,6 +153,7 @@ public class NoteDetailFragment
         mSortPref = mSharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
         notificationTag = ID;
         getLoaderManager().initLoader( NOTE_ITEM_LOADER, null, this );
+
     }
 
     @Override
@@ -173,12 +178,6 @@ public class NoteDetailFragment
         //TODO: import drawable resources for edit and cancel buttons
         switch ( item.getItemId() ) {
             case R.id.edit_title:
-                if ( mEditTitle.getVisibility() == View.GONE ) {
-                    //item.setIcon(  );
-                }
-                else {
-                    //item.setIcon(  );
-                }
                 editTitle();
                 return true;
             case R.id.change_color:
@@ -208,6 +207,15 @@ public class NoteDetailFragment
             case R.id.notification_toggle:
                 toggleNotificationIcon( item );
                 return true;
+            case android.R.id.home:
+                // This ID represents the Home or Up button. In the case of this
+                // activity, the Up button is shown. For
+                // more details, see the Navigation pattern on Android Design:
+                //
+                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+                //
+                getActivity().navigateUpTo( new Intent( mContext, NoteListActivity.class ) );
+                return true;
             default:
                 return super.onOptionsItemSelected( item );
         }
@@ -223,7 +231,7 @@ public class NoteDetailFragment
         itemInputLayout = (TextInputLayout) root.findViewById( R.id.input_layout );
 
         // Setup FAB
-        mFab = (FloatingActionButton) getActivity().findViewById( R.id.fab );
+        mFab = (FloatingActionButton) root.findViewById( R.id.detail_fab );
         if ( mFab != null ) {
             mFab.setOnClickListener( new View.OnClickListener() {
                 @Override
@@ -238,8 +246,16 @@ public class NoteDetailFragment
 
         if ( mRecyclerView != null ) { setupRecyclerView( mRecyclerView ); }
         
-        mToolbar = (Toolbar) getActivity().findViewById( R.id.detail_toolbar );
-       mEditTitle = (EditText) getActivity().findViewById( R.id.edit_title );
+        mToolbar = (Toolbar) root.findViewById( R.id.detail_toolbar );
+        if (mToolbar != null) mToolbar.setTitle( "" );
+        if (!mTwoPane){
+            (( AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+            ActionBar actionBar = ( (AppCompatActivity) getActivity() ).getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled( true );
+            }
+        }
+        mEditTitle = (EditText) root.findViewById( R.id.edit_title );
         if ( mEditTitle != null ) {
             mEditTitle.setOnFocusChangeListener( this );
             mEditTitle.setOnEditorActionListener( new TextView.OnEditorActionListener() {
@@ -260,17 +276,15 @@ public class NoteDetailFragment
             } );
         }
         setupToolBar();
+
         if ( mAddItem != null ) {
             mAddItem.setOnEditorActionListener( new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction ( TextView v, int actionId,
                                                 KeyEvent event ) {
-                    boolean handled = false;
 
                     saveNewItem();
-                    handled = true;
-
-                    return handled;
+                    return true;
                 }
             } );
         }
@@ -280,7 +294,7 @@ public class NoteDetailFragment
     
     private void setupRecyclerView ( RecyclerView recyclerView ) {
         mAdapter = new NoteItemAdapter( mContext, mEmptyView );
-        mRecyclerView.setAdapter( mAdapter );
+        recyclerView.setAdapter( mAdapter );
     }
     
     @Override
@@ -366,6 +380,7 @@ public class NoteDetailFragment
                                             NoteContract.NoteTitles._ID + " = ?",
                                             new String[] { ID } );
         setupToolBar();
+        updateWidgets();
     }
 
     /**
@@ -404,6 +419,7 @@ public class NoteDetailFragment
                                    .insert( NoteContract.NoteItems.CONTENT_URI,
                                             contentValues );
             Log.d( "NoteDetailFragment", "saveNewItem (line 319):  successful: " + s );
+            updateWidgets();
         } catch ( SQLException e ) {
             e.printStackTrace();
             Log.d( TAG, "saveNewItem: " + e.getMessage() );
@@ -415,7 +431,7 @@ public class NoteDetailFragment
     @Override public void onDetach () {
         super.onDetach();
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener( this );
-//        mEditTitle.setOnFocusChangeListener( null );
+        mEditTitle.setOnFocusChangeListener( null );
         mAddItem.setOnFocusChangeListener( null );
     }
 
@@ -433,8 +449,8 @@ public class NoteDetailFragment
                 }
                 else {
                     setFocusedView( (EditText) v );
-                    setImeVisibility( hasFocus );
                 }
+                setImeVisibility( hasFocus );
                 break;
             case R.id.add_item:
                 if ( !hasFocus ) {
@@ -442,8 +458,8 @@ public class NoteDetailFragment
                 }
                 else {
                     setFocusedView( (EditText) v );
-                    setImeVisibility( hasFocus );
                 }
+                setImeVisibility( hasFocus );
                 break;
         }
     }
@@ -470,13 +486,12 @@ public class NoteDetailFragment
         Intent intent = getActivity().getIntent();
 
         // Fake Backstack
-        // FIX: just going back to home screen on back pressed
         TaskStackBuilder stackBuilder = TaskStackBuilder.create( mContext );
         stackBuilder.addParentStack( NoteDetailActivity.class );
         stackBuilder.addNextIntent( intent );
         PendingIntent nextIntent = stackBuilder.getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder( mContext ).setSmallIcon( android.R.color.transparent );
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder( mContext );
         mBuilder.setSmallIcon( R.mipmap.ic_launcher )
                 //                .setLargeIcon(largeIcon())
                 .setContentTitle( mTitle )
@@ -508,6 +523,18 @@ public class NoteDetailFragment
         }
         else {
             getEditView().removeCallbacks( mShowImeRunnable );
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
+
+            if ( imm != null ) {
+                imm.hideSoftInputFromWindow( getEditView().getWindowToken(), 0 );
+            }
         }
+    }
+
+    private void updateWidgets () {
+        Context context = mContext;
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent( ACTION_DATA_UPDATED ).setPackage( context.getPackageName() );
+        context.sendBroadcast( dataUpdatedIntent );
     }
 }

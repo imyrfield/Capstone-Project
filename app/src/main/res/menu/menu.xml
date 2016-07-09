@@ -4,6 +4,7 @@
     <item
         android:id="@+id/add_note"
         android:enabled="false"
+        android:visible="false"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/action_add_note"
         app:showAsAction="ifRoom"

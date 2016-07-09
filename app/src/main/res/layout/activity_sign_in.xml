@@ -17,7 +17,7 @@
         android:keepScreenOn="true"
         android:text="@string/welcome_back"
         android:textColor="@android:color/white"
-        android:textSize="50sp"
+        android:textSize="@dimen/text_welcome"
         android:textStyle="bold"
         android:background="@color/colorPrimary"
         android:visibility="gone"

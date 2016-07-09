@@ -28,7 +28,6 @@ import com.thebluealliance.spectrum.SpectrumDialog;
 public class AddNoteDialog
         extends DialogFragment {
 
-    private View          view;
     private EditText      editText;
     private Button        pickColor;
     private ContentValues cv;
@@ -39,7 +38,7 @@ public class AddNoteDialog
 
         final AlertDialog.Builder builder  = new AlertDialog.Builder( getActivity() );
         LayoutInflater            inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate( R.layout.add_note_dialog, null );
+        View                      view     = inflater.inflate( R.layout.add_note_dialog, null );
         editText = (EditText) view.findViewById( R.id.edit_text );
         pickColor = (Button) view.findViewById( R.id.button_pick_color );
         cv = new ContentValues();

@@ -13,8 +13,8 @@ import com.ianmyrfield.things.data.NoteContract.NoteTitles;
  */
 public class DbHelper extends SQLiteOpenHelper {
 
-    static final String DATABASE_NAME = "things.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME    = "things.db";
+    private static final int    DATABASE_VERSION = 1;
 
     public DbHelper (Context c) {
         super( c, DATABASE_NAME, null, DATABASE_VERSION );

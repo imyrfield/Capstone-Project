@@ -1,10 +1,12 @@
 package com.ianmyrfield.things;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +16,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.ianmyrfield.things.data.NoteContract;
 import com.ianmyrfield.things.dialogs.AboutDialog;
@@ -35,11 +40,7 @@ public class NoteListActivity
                    NoteAdapter.NoteAdapterOnClickHandler {
 
     public static final  String TAG             = NoteListActivity.class.getSimpleName();
-    private static final String DIALOG_ABOUT    = "about";
-    private static final String DIALOG_SETTINGS = "add";
     private NoteAdapter  mAdapter;
-    private RecyclerView mRecyclerView;
-    private View         mEmptyView;
 
     public static final String[] NOTE_COLUMNS = {
             NoteContract.NoteTitles._ID,
@@ -47,10 +48,10 @@ public class NoteListActivity
             NoteContract.NoteTitles.COL_COLOR,
             };
 
-    static final        int COL_ID         = 0;
-    static final        int COL_TITLE      = 1;
-    static final        int COL_NOTE_COLOR = 2;
-    public static final int NOTE_LOADER    = 0;
+    static final         int COL_ID         = 0;
+    static final         int COL_TITLE      = 1;
+    static final         int COL_NOTE_COLOR = 2;
+    private static final int NOTE_LOADER    = 0;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -72,31 +73,35 @@ public class NoteListActivity
 
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
 
-        if ( fab != null && !mTwoPane) {
+        if ( fab != null ) {
+            if ( mTwoPane ) {
+                fab.setVisibility( View.GONE );
+            } else {
 
-            fab.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick ( View view ) {
-                    // For testing Firebase Crash reporting
-                    // throw new RuntimeException( "Boom" );
-                    AddNoteDialog dialog = new AddNoteDialog();
-                    dialog.show( getSupportFragmentManager(), "dialog" );
-                }
-            } );
+                fab.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick ( View view ) {
+                        // For testing Firebase Crash reporting
+                        // throw new RuntimeException( "Boom" );
+                        AddNoteDialog dialog = new AddNoteDialog();
+                        dialog.show( getSupportFragmentManager(), "dialog" );
+                    }
+                } );
 
+            }
         }
 
-        mRecyclerView = (RecyclerView) findViewById( R.id.note_list );
-        mEmptyView = findViewById( R.id.empty_view );
-        assert mRecyclerView != null;
-        setupRecyclerView( mRecyclerView, mEmptyView );
+        RecyclerView recyclerView = (RecyclerView) findViewById( R.id.note_list );
+        View         emptyView    = findViewById( R.id.empty_view );
+        assert recyclerView != null;
+        setupRecyclerView( recyclerView, emptyView );
 
         getLoaderManager().initLoader( NOTE_LOADER, null, this );
     }
 
     @Override public boolean onPrepareOptionsMenu ( Menu menu ) {
         if ( mTwoPane ) {
-            menu.findItem( R.id.add_note ).setEnabled( true );
+            menu.findItem( R.id.add_note ).setVisible( true );
         }
         return super.onPrepareOptionsMenu( menu );
     }
@@ -180,8 +185,6 @@ public class NoteListActivity
     @Override public void onClick ( Bundle bundle ) {
         String tag = bundle.getString( NoteDetailFragment.ARG_TITLE );
 
-        Log.d( "NoteListActivity", "onClick (line 186): " + tag );
-
         if ( getSupportFragmentManager().findFragmentByTag( tag ) == null ) {
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments( bundle );
@@ -189,9 +192,28 @@ public class NoteListActivity
                                        .replace( R.id.note_detail_container, fragment, tag )
                                        .commit();
         }
-//        else {
-//            getSupportFragmentManager().beginTransaction().replace( R.id
-//                                                                            .note_detail_container, new NoteDetailFragment() , tag);
-//        }
+    }
+
+    /**
+     * Closes the Keyboard when you touch outside the view
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent (MotionEvent event ) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText ) {
+                Log.d("NoteListActivity", "dispatchTouchEvent (line 211): " + v.toString());
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService( Context.INPUT_METHOD_SERVICE );
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
     }
 }

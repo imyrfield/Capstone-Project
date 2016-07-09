@@ -1,6 +1,7 @@
 package com.ianmyrfield.things;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -19,11 +20,12 @@ import com.ianmyrfield.things.data.NoteContract;
 public class NoteItemAdapter
         extends RecyclerView.Adapter<NoteItemAdapter.NoteItemAdapterViewHolder> {
 
-    private static final String TAG = "NoteItemAdapter";
-    private Cursor  mCursor;
-    private Context mContext;
-    private View    mEmptyView;
-    private View rootView;
+    private static final String TAG                 = "NoteItemAdapter";
+    public static final  String ACTION_DATA_UPDATED = "com.ianmyrfield.things.app.ACTION_DATA_UPDATED";
+    private       Cursor  mCursor;
+    private       Context mContext;
+    private final View    mEmptyView;
+    private       View    rootView;
 
     public NoteItemAdapter ( Context context, View emptyView ) {
         mContext = context;
@@ -110,7 +112,8 @@ public class NoteItemAdapter
     }
 
     public class NoteItemAdapterViewHolder
-            extends RecyclerView.ViewHolder implements View.OnClickListener {
+            extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
         public final TextView    mTextView;
         public final ImageButton mImageButton;
@@ -137,13 +140,15 @@ public class NoteItemAdapter
     private void deleteItem () {
         if ( mCursor == null ) return;
 
-        String id = mCursor.getString( NoteDetailFragment.COL_ITEM_ID);
-        int deleted = mContext.getContentResolver().delete( NoteContract.NoteItems.CONTENT_URI,
-                                                            NoteContract.NoteItems._ID + "" + " = ?",
-                                                            new String[] { id } );
+        String id = mCursor.getString( NoteDetailFragment.COL_ITEM_ID );
+        int deleted = mContext.getContentResolver()
+                              .delete( NoteContract.NoteItems.CONTENT_URI,
+                                       NoteContract.NoteItems._ID + "" + " = ?",
+                                       new String[] { id } );
         String message;
         if ( deleted > 0 ) {
             message = mCursor.getString( NoteDetailFragment.COL_ITEM_CONTENT ) + " Deleted!";
+            updateWidgets();
         }
         else {
             message = "Failed to delete item";
@@ -161,5 +166,12 @@ public class NoteItemAdapter
         }
 
         super.onDetachedFromRecyclerView( recyclerView );
+    }
+
+    private void updateWidgets () {
+        Context context = mContext;
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent( ACTION_DATA_UPDATED ).setPackage( context.getPackageName() );
+        context.sendBroadcast( dataUpdatedIntent );
     }
 }

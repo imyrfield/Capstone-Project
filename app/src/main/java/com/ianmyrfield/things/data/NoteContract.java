@@ -15,7 +15,7 @@ public class NoteContract {
     public static final String CONTENT_AUTHORITY = "com.ianmyrfield.things";
 
     // Base of all URI's which apps will use to contact the content provider.
-    public static final Uri BASE_CONTENT_URI = Uri.parse( "content://" + CONTENT_AUTHORITY  );
+    private static final Uri BASE_CONTENT_URI = Uri.parse( "content://" + CONTENT_AUTHORITY );
 
     // Possible paths (appended to base content URI for possible URI's)
     // [com.ianmyrfield.things/note]

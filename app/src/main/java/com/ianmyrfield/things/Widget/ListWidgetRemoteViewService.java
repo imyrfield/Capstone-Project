@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Binder;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -24,6 +26,7 @@ public class ListWidgetRemoteViewService
     private Context mContext;
     private int mID = -1;
     private Cursor mCursor;
+    private static final String TAG = "RemoteViewService";
 
     @Override
     public RemoteViewsFactory onGetViewFactory ( Intent intent ) {
@@ -46,8 +49,20 @@ public class ListWidgetRemoteViewService
 
         @Override public void onCreate () {
 
-            Log.d("RemoteListViewsFactory", "onCreate (line 49): " + mID);
+
+
+        }
+
+        @Override public void onDataSetChanged () {
+            Log.d("RemoteListViewsFactory", "onDataSetChanged (line 55): " + mID);
             if (mID == -1) return;
+            if (mCursor != null) mCursor.close();
+
+            // This method is called by the app hosting the widget (e.g., the launcher)
+            // However, our ContentProvider is not exported so it doesn't have access to the
+            // data. Therefore we need to clear (and finally restore) the calling identity so
+            // that calls use our process and permission
+            final long identityToken = Binder.clearCallingIdentity();
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences( mContext );
             String mSortPref = sharedPreferences.getString( getString( R.string.pref_sort_key ), getString( R.string.pref_sort_default ) );
@@ -61,29 +76,34 @@ public class ListWidgetRemoteViewService
                                                   null,
                                                   sortOrder  );
 
-
-        }
-
-        @Override public void onDataSetChanged () {
-
+            Binder.restoreCallingIdentity(identityToken);
         }
 
         @Override public void onDestroy () {
             if ( mCursor != null ) {
 
                 mCursor.close();
+                mCursor = null;
             }
         }
 
         @Override public int getCount () {
-            return 0;
+            return mCursor == null ? 0 : mCursor.getCount();
         }
 
         @Override public RemoteViews getViewAt ( int position ) {
-            if (mCursor == null) return null;
+            if (position == AdapterView.INVALID_POSITION ||
+                        mCursor == null || !mCursor.moveToPosition(position)){
+                Log.d("RemoteListViewsFactory", "getViewAt (line 84): ");
+                return null;
+            }
 
+            mCursor.moveToPosition( position );
             RemoteViews rv = new RemoteViews( mContext.getPackageName(), R.layout.widget_item );
+            Log.d( TAG, "getViewAt: "+ mCursor.getCount() );
             rv.setTextViewText( R.id.widget_item_textview, mCursor.getString( 3 ) );
+
+            Log.d("RemoteListViewsFactory", "getViewAt (line 87): " + mCursor.getString( 3 ));
             return rv;
         }
 
@@ -92,15 +112,18 @@ public class ListWidgetRemoteViewService
         }
 
         @Override public int getViewTypeCount () {
-            return 0;
+            return 1;
         }
 
         @Override public long getItemId ( int position ) {
-            return 0;
+            if (mCursor.moveToPosition( position )){
+                return mCursor.getLong( 2 );
+            }
+            return position;
         }
 
         @Override public boolean hasStableIds () {
-            return false;
+            return true;
         }
     }
 }

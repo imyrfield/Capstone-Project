@@ -6,7 +6,7 @@
     <item android:drawable="@color/colorPrimary" />
     <item
         android:bottom="@dimen/app_bar_height"
-        android:right="@dimen/right_marg"
+        android:right="@dimen/launch_screen_right_margin"
         >
         <bitmap
             android:gravity="center"

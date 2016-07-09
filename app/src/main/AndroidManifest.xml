@@ -55,12 +55,14 @@
         </activity>
 
         <provider
+            android:exported="false"
             android:name=".data.NoteProvider"
             android:authorities="com.ianmyrfield.things" />
         <receiver
             android:name=".widget.ListWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.ianmyrfield.things.app.ACTION_DATA_UPDATED"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

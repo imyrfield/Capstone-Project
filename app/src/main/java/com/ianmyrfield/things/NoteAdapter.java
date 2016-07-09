@@ -26,13 +26,12 @@ public class NoteAdapter
         extends RecyclerView.Adapter<NoteAdapter.NoteAdapterViewHolder> {
 
     private static final String TAG = NoteAdapter.class.getSimpleName();
-    private       Cursor                    mCursor;
-    final private Context                   mContext;
-    private       NoteAdapterOnClickHandler mClickHandler;
-    private       boolean                   mTwoPane;
-    private       boolean                   displayOptions;
-    private       View                      rootView;
-    private View mEmptyView;
+    private       Cursor  mCursor;
+    final private Context mContext;
+    private       boolean mTwoPane;
+    private       boolean displayOptions;
+    private       View    rootView;
+    private final View    mEmptyView;
 
     public interface NoteAdapterOnClickHandler {
         void onClick ( Bundle bundle);
@@ -40,7 +39,7 @@ public class NoteAdapter
 
     public NoteAdapter (Context context, NoteAdapterOnClickHandler clickHandler, View emptyView) {
         mContext = context;
-        mClickHandler = clickHandler;
+        NoteAdapterOnClickHandler clickHandler1 = clickHandler;
         mEmptyView = emptyView;
     }
 
@@ -194,8 +193,7 @@ public class NoteAdapter
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                     shareIntent.setType("text/plain");
-                    // TODO: Format Share message
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "My Note");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Don't Forget " + mCursor.getString( NoteListActivity.COL_TITLE ));
                     mContext.startActivity( shareIntent );
                     return;
 

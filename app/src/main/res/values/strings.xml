@@ -11,7 +11,7 @@
 
     <!--Detail Activity-->
     <string name="title_note_detail">Note Detail</string>
-    <string name="edit_text_hint_add_item">Add another item to your list...</string>
+    <string name="edit_text_hint_add_item">Add another item to your list…</string>
 
     <!--About-->
     <string name="about">About</string>
@@ -77,4 +77,8 @@
     <string name="widget_picker">Pick a list:</string>
     <string name="widget_empty_view">Nothing to do!</string>
     <string name="action_add_note">Add Note</string>
+    <string name="content_description_profile_picture">Profile Picture</string>
+    <string name="content_description_delete">Delete</string>
+    <string name="content_description_exit">Exit</string>
+    <string name="content_description_share">Share</string>
 </resources>

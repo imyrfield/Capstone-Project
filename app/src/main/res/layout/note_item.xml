@@ -7,18 +7,18 @@
     android:divider="@android:drawable/divider_horizontal_dark"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
     >
     <!--Bottom View-->
     <LinearLayout
         android:background="@color/cardview_dark_background"
-        android:layout_width="150dp"
+        android:layout_width="@dimen/swipe_layout_width"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         >
         <ImageButton
             android:id="@+id/delete"
+            android:contentDescription="@string/content_description_delete"
             android:src="@android:drawable/ic_menu_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="@android:color/white"
         tools:background="@color/green"
         tools:context=".NoteDetailActivity"
         >
@@ -43,8 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginEnd="50dp"
-            android:paddingStart="4dp"
-            android:textSize="20sp"
+            android:paddingStart="@dimen/half_padding"
+            android:textSize="@dimen/text_large"
             tools:text="Example Item"
             />
 
@@ -54,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="4dp"
+            android:padding="@dimen/half_padding"
             android:src="@android:drawable/ic_popup_reminder"
             android:visibility="gone"
             tools:background="@color/green"

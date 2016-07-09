@@ -3,8 +3,8 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_marginLeft="16dp"
-              android:layout_marginRight="16dp"
+              android:layout_marginLeft="@dimen/layout_margin"
+              android:layout_marginRight="@dimen/layout_margin"
               android:baselineAligned="false"
               android:divider="?android:attr/dividerHorizontal"
               android:orientation="horizontal"
@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_weight="2"
         android:layout_height="match_parent"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="@dimen/layout_margin"
         >
 
         <android.support.v7.widget.RecyclerView
@@ -38,7 +38,7 @@
             android:layout_height="match_parent"
             android:text="@string/empty_view_text"
             android:gravity="center"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_large"
             android:layout_marginBottom="?android:actionBarSize"
             />
     </FrameLayout>

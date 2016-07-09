@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 
 import com.ianmyrfield.things.R;
 
@@ -18,7 +17,6 @@ public class AboutDialog extends DialogFragment {
     public Dialog onCreateDialog (Bundle savedInstanceState) {
 
         AlertDialog.Builder builder  = new AlertDialog.Builder( getActivity());
-        LayoutInflater       inflater = getActivity().getLayoutInflater();
 
         builder.setTitle( R.string.about)
                .setMessage(R.string.about_text)

@@ -19,10 +19,10 @@ public class NoteProvider
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private DbHelper mDbHelper;
 
-    // INT codes to return as matchs in UriMatcher
-    static final int NOTE_TITLE       = 100;
-    static final int NOTE_ITEM        = 101;
-    static final int NOTES_WITH_TITLE = 102;
+    // INT codes to return as matches in UriMatcher
+    private static final int NOTE_TITLE       = 100;
+    private static final int NOTE_ITEM        = 101;
+    private static final int NOTES_WITH_TITLE = 102;
 
     private static final SQLiteQueryBuilder sNotesWithTitleQueryBuilder;
 
@@ -163,7 +163,7 @@ public class NoteProvider
                 break;
             }
             default:
-                throw new UnsupportedOperationException( "Unkown uri: " + uri );
+                throw new UnsupportedOperationException( "Unknown uri: " + uri );
         }
 
         getContext().getContentResolver().notifyChange( uri, null );
@@ -193,7 +193,7 @@ public class NoteProvider
                                          selectionArgs );
                 break;
             default:
-                throw new UnsupportedOperationException( "Unkown uri: " + uri );
+                throw new UnsupportedOperationException( "Unknown uri: " + uri );
         }
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange( uri, null );

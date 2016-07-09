@@ -1,5 +1,6 @@
 package com.ianmyrfield.things;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,12 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SignIn
         extends AppCompatActivity {
 
-    public static final  String  PREF_IS_FIRST_LOAD     = "isFirstLoad";
-    private static final int     RC_SIGN_IN             = 100;
-
-    private TextView welcome;
-    private Button   skip;
-    private Button   signIn;
+    private static final String PREF_IS_FIRST_LOAD = "isFirstLoad";
+    private static final int    RC_SIGN_IN         = 100;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -34,16 +31,16 @@ public class SignIn
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_sign_in );
 
-        welcome = (TextView) findViewById( R.id.welcome );
+        TextView welcome = (TextView) findViewById( R.id.welcome );
 
         FirebaseAuth      auth        = FirebaseAuth.getInstance();
         SharedPreferences sp          = getPreferences( MODE_PRIVATE );
         boolean           isFirstLoad = sp.getBoolean( PREF_IS_FIRST_LOAD, true );
 
-        if (!isFirstLoad) {
+        if ( !isFirstLoad ) {
             // User already auth'd - Show welcome message
-            if (auth.getCurrentUser() != null) {
-                //TODO: setup transition, not being displayed since activity starts right away
+            if ( auth.getCurrentUser() != null ) {
+                //TODO: not being displayed since activity starts right away
                 welcome.setVisibility( View.VISIBLE );
                 String s = welcome.getText() + auth.getCurrentUser().getDisplayName();
                 welcome.setText( s );
@@ -52,29 +49,34 @@ public class SignIn
             // User has not signed in, but has already seen sign in screen
             startMainActivity();
         }
-        signIn = (Button) findViewById( R.id.sign_in );
-        signIn.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-                startActivityForResult( AuthUI.getInstance()
-                                              .createSignInIntentBuilder()
-                                              .setProviders( AuthUI.EMAIL_PROVIDER,
-                                                             AuthUI.GOOGLE_PROVIDER )
-                                              .setTheme( R.style.LoginTheme )
-                                              .build(), RC_SIGN_IN );
-            }
-        } );
+        Button signIn = (Button) findViewById( R.id.sign_in );
+        if ( signIn != null ) {
+            signIn.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick ( View v ) {
+                    startActivityForResult( AuthUI.getInstance()
+                                                  .createSignInIntentBuilder()
+                                                  .setProviders( AuthUI.EMAIL_PROVIDER,
+                                                                 AuthUI.GOOGLE_PROVIDER )
+                                                  .setTheme( R.style.LoginTheme )
+                                                  .build(), RC_SIGN_IN, ActivityOptions.makeSceneTransitionAnimation( SignIn.this )
+                                                                                       .toBundle() );
+                }
+            } );
+        }
 
 
         // Starts MainActivity, and hide's sign in on future launches
-        skip = (Button) findViewById( R.id.skip_button );
-        skip.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-                hideSignIn();
-                startMainActivity();
-            }
-        } );
+        Button skip = (Button) findViewById( R.id.skip_button );
+        if ( skip != null ) {
+            skip.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick ( View v ) {
+                    hideSignIn();
+                    startMainActivity();
+                }
+            } );
+        }
     }
 
     @Override
@@ -92,7 +94,7 @@ public class SignIn
 
     private void startMainActivity () {
         Intent intent = new Intent( this, NoteListActivity.class );
-        startActivity( intent );
+        startActivity( intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() );
     }
 
     private void signInFailed () {
