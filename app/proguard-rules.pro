@@ -15,8 +15,3 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
-#TODO: Remove for release:
--keep class com.facebook.stetho.** {
-  *;
-}
