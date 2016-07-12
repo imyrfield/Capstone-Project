@@ -1,4 +1,4 @@
-# **Things** - Udactiy Android Nanodegree Capstone Project
+# **Things** - Udacity Android Nanodegree Capstone Project
 -----------------------------------------------------
 This was my final project for Udacity's Android Nanodegree. It's a relatively simple note taking app built to incorporate the numerous techniques, and Android APIs learned. 
 
